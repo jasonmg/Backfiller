@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="scala-sdk-2.11.8" level="application" />
+    <orderEntry type="module" module-name="app_backfiller" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://E:/jar/config-1.2.0.jar!/" />
+          <root url="jar://E:/jar/args4j-2.32.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17/site/apidocs" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://E:/jar/args4j-2.32-sources.jar!/" />
+          <root url="jar://E:/jar/args4j-2.32.jar!/OSGI-OPT/src" />
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17" />
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17/contribs/CekiGulcu" />
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17/contribs/Jamie Tsao" />
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17/contribs/JimMoore" />
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17/contribs/ThomasFenner" />
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17/src/main/java" />
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17/src/main/javadoc" />
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17/src/performance/java" />
+          <root url="jar://E:/jar/log4j-1.2.17.zip!/apache-log4j-1.2.17/tests/src/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://E:/jar/apache-log4j-1.2.17/log4j-1.2.17.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://E:/jar/spray-json_2.11-1.3.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/.." />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>
