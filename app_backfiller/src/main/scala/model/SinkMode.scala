@@ -1,6 +1,6 @@
 package main.scala.model
 
-trait SinkMode
-
-case object JSON extends SinkMode
-case object XML extends SinkMode
+object SinkMode extends Enumeration {
+  type SinkMode  = Value
+  val JSON,XML,CSV = Value
+}

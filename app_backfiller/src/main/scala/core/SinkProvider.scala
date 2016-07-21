@@ -3,7 +3,7 @@ package main.scala.core
 import java.io.{File, PrintWriter}
 
 import main.scala.model._
-import main.scala.model.SinkMode
+import main.scala.model.SinkMode._
 import main.scala.utils.AutoClose._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.{universe => ru}
@@ -17,7 +17,7 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
   def insert(ele: EntityCollection): Unit = {
 
     if (args.smokeFile.isDefined)
-      insertFile(args.smokeFile.get, sinkModeObj(args.sinkMode), ele)
+      insertFile(args.smokeFile.get, args.sinkMode.get, ele)
     else {
       // save into database
       throw new RuntimeException("unsupported please contact developer(jason ji) for details. Apologise!")
@@ -26,24 +26,21 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
 
   def insertFile(smokeFile: File, mode: SinkMode, ele: EntityCollection) = {
     using(new PrintWriter(smokeFile)) { printer =>
-      val res = convertToStr(mode, ele)
+      val res = mode match {
+        case JSON => toJSONOutput(ele.entities.map(_.asInstanceOf[T]))
+        case XML => toXMLOutput(ele.entities)
+        case CSV => toCSVOutput(ele.entities.map(_.asInstanceOf[T]))
+        case _ => throw new IllegalArgumentException(s"unsupported sink mode: $mode")
+      }
       printer.write(res)
     }
-  }
-
-  protected val sinkModeObj: PartialFunction[String, SinkMode] = {
-    case "JSON" => JSON
-    case "XML" => XML
-  }
-
-  protected val convertToStr: PartialFunction[(SinkMode, EntityCollection), String] = {
-    case (JSON, ele) => toJSONOutput(ele.entities.map(_.asInstanceOf[T]))
-    case (XML, ele) => toXMLOutput(ele.entities)
   }
 
   type T <: Entity
 
   protected def toJSONOutput(entities: Seq[T]): String = throw new RuntimeException("please implement toJSONOutput before invoke.")
+
+  protected def toCSVOutput(entities: Seq[T]):String = throw new RuntimeException("please implement toCSVOutput before invoke.")
 
   private[core] def getEntityElementName[T: ru.TypeTag](entity: T): Seq[(String, Type)] = {
     val theType = ru.typeTag[T].tpe
