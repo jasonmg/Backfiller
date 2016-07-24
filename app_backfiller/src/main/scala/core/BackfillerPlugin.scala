@@ -2,24 +2,27 @@ package main.scala.core
 
 import main.scala.utils.Log
 
-trait BackfillerPlugin[T <: Entity, A <: BackfillerArgs, SourceArg] {
-
-  def sliceProvider: SliceProvider[A, SourceArg]
+// User should extends BackfillerPlugin
+abstract class BackfillerPlugin[T <: Entity, Args <: BackfillerArgs, SourceArg](val cmdLine: BackfillerArgs) extends BackfillerPluginBase {
+  def sliceProvider: SliceProvider[Args, SourceArg]
   def sourceProvider: SourceProvider[T, SourceArg]
   def convertProvider: ConvertProvider[T]
-  def sinkProvider: SinkProvider
 }
 
+// this trait should only place common default implement
+trait BackfillerPluginBase {
+  val cmdLine: BackfillerArgs
+  def sinkProvider = new DefaultSinkProvider(cmdLine)
+}
 
-// User should extends BaseBackfillerPlugin for any specific implementation
-// because it contains show default implement, i.e. sinkProvider
-class BaseBackfillerPlugin(plugin: BackfillerPlugin[Entity, BackfillerArgs, Any], args: BackfillerArgs) extends BackfillerPlugin[Entity, BackfillerArgs, Any] with Log {
+class BaseBackfillerPlugin[Args <: BackfillerArgs](plugin: BackfillerPlugin[Entity, Args, Any], val args: BackfillerArgs) extends BackfillerPlugin[Entity, Args, Any](args) with Log {
   log.info("Instantiate BaseBackfillerPlugin primary construct.")
 
+  override val cmdLine: BackfillerArgs = args
   def sliceProvider = plugin.sliceProvider
   def sourceProvider = plugin.sourceProvider
   def convertProvider = plugin.convertProvider
-  def sinkProvider = new DefaultSinkProvider(args)
+  override def sinkProvider = plugin.sinkProvider
 }
 
 

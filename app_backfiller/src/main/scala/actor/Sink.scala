@@ -7,7 +7,7 @@ import main.scala.core._
 /**
   * Sink response for persistent data into specific destination
   */
-class Sink(plugin: BaseBackfillerPlugin) extends Actor with ActorLogging {
+class Sink(plugin: BaseBackfillerPlugin[_]) extends Actor with ActorLogging {
   import Sink._
 
   def receive = {
@@ -22,7 +22,7 @@ class Sink(plugin: BaseBackfillerPlugin) extends Actor with ActorLogging {
 }
 
 object Sink {
-  def props(plugin: BaseBackfillerPlugin) = {
+  def props(plugin: BaseBackfillerPlugin[_]) = {
     Props(new Sink(plugin))
   }
   case object RequestSink

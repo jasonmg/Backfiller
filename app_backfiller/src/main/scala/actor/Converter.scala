@@ -7,7 +7,7 @@ import main.scala.core._
 /**
   * Converter response for convert source data into desired data type
   */
-class Converter(plugin: BaseBackfillerPlugin) extends Actor with ActorLogging {
+class Converter(plugin: BaseBackfillerPlugin[_]) extends Actor with ActorLogging {
   import Converter._
 
   def receive = {
@@ -22,7 +22,7 @@ class Converter(plugin: BaseBackfillerPlugin) extends Actor with ActorLogging {
 }
 
 object Converter {
-  def props(plugin: BaseBackfillerPlugin) = {
+  def props(plugin: BaseBackfillerPlugin[_]) = {
     Props(new Converter(plugin))
   }
 

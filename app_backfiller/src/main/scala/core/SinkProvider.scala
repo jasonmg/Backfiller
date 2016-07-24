@@ -1,8 +1,6 @@
 package main.scala.core
 
 import java.io.{File, PrintWriter}
-
-import main.scala.model._
 import main.scala.model.SinkMode._
 import main.scala.utils.AutoClose._
 import scala.reflect.ClassTag

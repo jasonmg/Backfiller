@@ -7,7 +7,7 @@ import main.scala.core._
 /**
   * It's the controller class to coordinate the work flow.
   */
-class Controller(plugin: BaseBackfillerPlugin) extends Actor with ActorLogging {
+class Controller(plugin: BaseBackfillerPlugin[_]) extends Actor with ActorLogging {
   import Controller._
 
   val source = context.actorOf(Source.props(plugin),"Source_actor")
