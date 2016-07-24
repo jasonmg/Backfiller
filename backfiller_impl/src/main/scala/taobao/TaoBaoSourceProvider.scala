@@ -4,9 +4,6 @@ import main.scala.core.SourceProvider
 import main.scala.model.{Sex, TaoBaoCSV}
 import main.scala.model.TaoBaoCSVEntity
 
-/**
-  * Created by Administrator on 2016-07-17.
-  */
 class TaoBaoSourceProvider extends SourceProvider[TaoBaoCSVEntity, TaoBaoSliceOut] {
 
   def load(sourceArg: TaoBaoSliceOut): Traversable[TaoBaoCSVEntity] = {

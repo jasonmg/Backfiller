@@ -2,9 +2,6 @@ package main.scala.utils
 
 import scala.util.control.NonFatal
 
-/**
-  * Created by Administrator on 2016-07-16.
-  */
 object AutoClose extends Log {
 
   def using[A, T <: {def close() : Unit}](closeable: T)(f: T => A): A = {

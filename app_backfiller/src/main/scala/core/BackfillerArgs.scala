@@ -1,9 +1,10 @@
 package main.scala.core
 
 import java.io.File
+
 import main.scala.model.SinkMode
 import main.scala.model.SinkMode._
-import org.kohsuke.args4j.{CmdLineParser, OptionDef, Option => Ops}
+import org.kohsuke.args4j.{CmdLineParser, OptionDef, OptionHandlerRegistry, Option => Ops}
 import org.kohsuke.args4j.spi.{OneArgumentOptionHandler, Setter}
 
 trait BackfillerArgs {
@@ -25,14 +26,18 @@ trait BackfillerArgs {
 
 object BackfillerArgs {
 
+  def setup(): Unit = {
+    OptionHandlerRegistry.getRegistry.registerHandler(classOf[File], classOf[FileOptionOptionHandler])
+  }
+
   class FileOptionOptionHandler(parser: CmdLineParser, option: OptionDef, setter: Setter[Option[File]]) extends OneArgumentOptionHandler[Option[File]](parser, option, setter) {
     def parse(argument: String): Option[File] = if (argument.isEmpty) None else Some(new File(argument))
   }
 
-    class EnumOptionOptionHandler[T <: Enumeration](parser: CmdLineParser, option: OptionDef, setter: Setter[Option[T#Value]], value: T) extends OneArgumentOptionHandler[Option[T#Value]](parser, option, setter) {
-      def parse(argument: String): Option[T#Value] = if (argument.isEmpty) None else Some(value.withName(argument))
-    }
+  class EnumOptionOptionHandler[T <: Enumeration](parser: CmdLineParser, option: OptionDef, setter: Setter[Option[T#Value]], value: T) extends OneArgumentOptionHandler[Option[T#Value]](parser, option, setter) {
+    def parse(argument: String): Option[T#Value] = if (argument.isEmpty) None else Some(value.withName(argument))
+  }
 
-    class SinkModeEnumOptionOptionHandler(parser: CmdLineParser, option: OptionDef, setter: Setter[Option[SinkMode.SinkMode]]) extends EnumOptionOptionHandler(parser, option, setter, SinkMode)
+  class SinkModeEnumOptionOptionHandler(parser: CmdLineParser, option: OptionDef, setter: Setter[Option[SinkMode.SinkMode]]) extends EnumOptionOptionHandler(parser, option, setter, SinkMode)
 
 }

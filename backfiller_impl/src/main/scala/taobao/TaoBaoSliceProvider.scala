@@ -10,10 +10,8 @@ import TaoBaoCSV._
 
 import scala.io.Source
 
-/**
-  * Created by Administrator on 2016-07-12.
-  */
 class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSliceOut] with Log {
+
   import TaoBaoSliceProvider._
 
   def slice(args: TaoBaoBackfillerArgs): Seq[TaoBaoSliceOut] = {
@@ -32,8 +30,7 @@ class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSlic
       val lines = source.getLines()
 
       val head = lines.next()
-      log.info(s"csv head is: $head")
-      assert(validate(head))
+      assert(validate(head), s"invalid csv head: $head")
 
       lines.grouped(sliceWidth).toSeq
     }

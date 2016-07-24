@@ -5,9 +5,9 @@ import main.scala.actor.Controller._
 import main.scala.core._
 
 /**
-  * Source response for read data from different resource system
+  * Source response for read data from diverse resource system
   */
-class Source(plugin: BaseBackfillerPlugin) extends Actor with ActorLogging {
+class Source(plugin: BaseBackfillerPlugin[_]) extends Actor with ActorLogging {
 import Source._
 
   def receive = {
@@ -21,7 +21,7 @@ import Source._
 }
 
 object Source{
-  def props(plugin: BaseBackfillerPlugin) =
+  def props(plugin: BaseBackfillerPlugin[_]) =
     Props(new Source(plugin))
 
 
