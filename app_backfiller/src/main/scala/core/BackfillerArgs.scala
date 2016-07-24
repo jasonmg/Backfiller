@@ -1,30 +1,39 @@
 package main.scala.core
 
 import java.io.File
-
 import main.scala.model.SinkMode
 import main.scala.model.SinkMode._
+import org.kohsuke.args4j
 import org.kohsuke.args4j.{CmdLineParser, OptionDef, OptionHandlerRegistry, Option => Ops}
 import org.kohsuke.args4j.spi.{OneArgumentOptionHandler, Setter}
+import main.scala.core.BackfillerArgsHandler._
+class BackfillerArgs {
 
-trait BackfillerArgs {
 
-  import BackfillerArgs._
 
-  @Ops(name = "--plugin", usage = "provider your own FQ plugin name which contains your source|converter|sink logic",
+  @args4j.Option(name = "--plugin", usage = "provider your own FQ plugin name which contains your source|converter|sink logic",
     required = true)
-  val pluginName = null
+  def setPlugin(name:String): Unit ={
+    pluginName = name
+  }
+  var pluginName: String = null
 
-  @Ops(name = "--smokeFile", usage = "smokeFile is for save back fill date into it instead of in database or somewhere else",
-    handler = classOf[FileOptionOptionHandler], required = false)
-  val smokeFile: Option[File] = None
+  @args4j.Option(name = "--smokeFile", usage = "smokeFile is for save back fill date into it instead of in database or somewhere else",
+    required = false)
+  def setSmokeFile(name:String): Unit ={
+    smokeFile = Some(new File(name))
+  }
+  var smokeFile: Option[File] = None
 
-  @Ops(name = "--sinkMode", usage = "smokeFile is for save back fill date into it instead of in database or somewhere else",
-    handler = classOf[SinkModeEnumOptionOptionHandler], required = false)
-  val sinkMode: Option[SinkMode] = None
+  @args4j.Option(name = "--sinkMode", usage = "smokeFile is for save back fill date into it instead of in database or somewhere else",
+    required = false)
+  def setSinkMode(name:String): Unit ={
+    sinkMode = Some(SinkMode.withName(name))
+  }
+  var sinkMode: Option[SinkMode] = None
 }
 
-object BackfillerArgs {
+object BackfillerArgsHandler {
 
   def setup(): Unit = {
     OptionHandlerRegistry.getRegistry.registerHandler(classOf[File], classOf[FileOptionOptionHandler])

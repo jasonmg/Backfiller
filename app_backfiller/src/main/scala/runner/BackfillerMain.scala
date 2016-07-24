@@ -5,12 +5,13 @@ import main.scala.actor.Controller
 import main.scala.actor.Controller._
 import main.scala.core._
 import main.scala.utils.{CmdLineParserBase, magic}
+import main.scala.core.BackfillerArgsHandler
 
 abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultTo[Args, BackfillerArgs], val manifest: Manifest[Args]) extends CmdLineParserBase[Args] {
   private val system = ActorSystem("BaseBackfillerSystem")
 
   override def main(args: Array[String]): Unit = {
-    BackfillerArgs.setup()
+    BackfillerArgsHandler.setup()
     super.main(args)
     start
   }

@@ -1,12 +1,12 @@
 package main.scala.utils
 
 import main.scala.core.BackfillerArgs
-import org.kohsuke.args4j.{CmdLineException, CmdLineParser, OptionHandlerRegistry}
+import org.kohsuke.args4j.{CmdLineException, CmdLineParser}
 
 import scala.collection.JavaConverters._
 
 trait CmdLineParserBase[Args <: BackfillerArgs] extends Log {
-  def manifest: Manifest[Args]
+  def manifest: Manifest[Args] // carry class type info from compile time to run time
 
   var cmdLine: Args = _
   var parser: CmdLineParser = _
@@ -16,7 +16,7 @@ trait CmdLineParserBase[Args <: BackfillerArgs] extends Log {
     cmdLine = manifest.runtimeClass.newInstance().asInstanceOf[Args]
     parser = new CmdLineParser(cmdLine)
     try {
-      parser.parseArgument(args.toList.asJava)
+      parser.parseArgument(args.toArray: _*)
     } catch {
       case e: CmdLineException =>
         log.error(s"Error:${e.getMessage}\n Usage:\n")
@@ -27,8 +27,7 @@ trait CmdLineParserBase[Args <: BackfillerArgs] extends Log {
 }
 
 
-// TODO i aren't figure out how this part code fix implicit default args in class argument. copied from other place.
-// should come back once have any explanation.
+// TODO i aren't figure out how this part code fix implicit default args in class argument. copied from other place. should come back once have any explanation.
 package magic {
 
   class DefaultTo[A, B]
