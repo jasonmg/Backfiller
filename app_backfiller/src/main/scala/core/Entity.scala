@@ -9,8 +9,6 @@ abstract class XMLEntity extends Entity
 
 
 trait EntityCollection {
-//  val args: BackfillerArgs
-
   val entities: Seq[Entity]
 
   def size: Int = entities.size
@@ -20,6 +18,9 @@ object EntityCollection {
 
   def apply(ent: Entity): EntityCollection =
     new EntityCollection { val entities = Seq(ent) }
+
+  def apply(ents: Seq[Entity]): EntityCollection =
+    new EntityCollection{ val entities = ents }
 
 }
 

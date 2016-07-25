@@ -3,11 +3,13 @@ package main.scala.actor
 import akka.actor._
 import main.scala.actor.Controller._
 import main.scala.core._
+import main.scala.utils.RetryLogic._
 
 /**
   * Sink response for persistent data into specific destination
   */
-class Sink(plugin: BaseBackfillerPlugin[_]) extends Actor with ActorLogging {
+class Sink(plugin: BaseBackfillerPlugin[_], controllerActor: ActorRef) extends Actor with ActorLogging {
+
   import Sink._
 
   def receive = {
@@ -15,15 +17,20 @@ class Sink(plugin: BaseBackfillerPlugin[_]) extends Actor with ActorLogging {
       log.info("start sink actor ")
       sender() ! StartSinkDone
 
-    case RequestSink =>
-      plugin.sinkProvider
+    case RequestSink(ele) =>
+      retry(ele, plugin.sinkProvider.insert)
+      controllerActor ! SinkComplete
+
   }
 
 }
 
 object Sink {
-  def props(plugin: BaseBackfillerPlugin[_]) = {
-    Props(new Sink(plugin))
+  def props(plugin: BaseBackfillerPlugin[_], controllerActor: ActorRef) = {
+    Props(new Sink(plugin, controllerActor))
   }
-  case object RequestSink
+
+  case class RequestSink(arg: EntityCollection)
+  case object SinkComplete
+
 }

@@ -2,28 +2,34 @@ package main.scala.actor
 
 import akka.actor._
 import main.scala.actor.Controller._
+import main.scala.actor.Converter.RequestConverter
 import main.scala.core._
+import main.scala.utils.RetryLogic._
 
 /**
   * Source response for read data from diverse resource system
   */
-class Source(plugin: BaseBackfillerPlugin[_]) extends Actor with ActorLogging {
-import Source._
+class Source(plugin: BaseBackfillerPlugin[_], convertActor: ActorRef) extends Actor with ActorLogging {
+
+  import Source._
 
   def receive = {
     case StartSource =>
       log.info("start source actor.")
       sender() ! StartSourceDone
-    case RequestSource =>
+    case RequestSource(arg) =>
       log.info(s"request source from: ${plugin.getClass.getName}")
-      plugin.sourceProvider
+      val res = retry(arg, plugin.sourceProvider.load)
+
+      convertActor ! RequestConverter(res.toSeq)
   }
 }
 
-object Source{
-  def props(plugin: BaseBackfillerPlugin[_]) =
-    Props(new Source(plugin))
+object Source {
+  def props(plugin: BaseBackfillerPlugin[_], convertActor: ActorRef) =
+    Props(new Source(plugin, convertActor))
 
 
-  case object RequestSource
+  case class RequestSource(sourceArg: Any)
+
 }

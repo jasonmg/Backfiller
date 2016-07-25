@@ -6,6 +6,6 @@ import main.scala.model.TaoBaoCSVEntity
 
 class TaoBaoConvertProvider extends ConvertProvider[TaoBaoCSVEntity] {
 
-  def convert(source: TaoBaoCSVEntity): EntityCollection =
+  def convert(source: Seq[TaoBaoCSVEntity]): EntityCollection =
     EntityCollection(source)
 }
