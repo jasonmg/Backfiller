@@ -12,13 +12,13 @@ object TaoBaoCSV {
     val columns = head.trim.split(",")
     assert(columns.size == 7)
 
-    columns(0) == "id" &&
-      columns(1) == "name" &&
-      columns(2) == "age" &&
-      columns(3) == "sex" &&
-      columns(4) == "marriage" &&
-      columns(5) == "address" &&
-      columns(6) == "country"
+//    columns(0).trim == "id" &&
+      columns(1).trim == "name" &&
+      columns(2).trim == "age" &&
+      columns(3).trim == "sex" &&
+      columns(4).trim == "marriage" &&
+      columns(5).trim == "address" &&
+      columns(6).trim == "country"
   }
 
 }

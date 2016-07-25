@@ -1,6 +1,7 @@
 package main.scala.taobao
 
 import java.io.File
+import java.nio.charset.CodingErrorAction
 
 import main.scala.core.SliceProvider
 import main.scala.model.TaoBaoCSV
@@ -8,7 +9,7 @@ import main.scala.utils.AutoClose._
 import main.scala.utils.Log
 import TaoBaoCSV._
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 
 class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSliceOut] with Log {
 
@@ -23,10 +24,11 @@ class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSlic
     * return seq of content
     */
   def sliceCSV(file: Option[File]): Seq[Seq[String]] = {
-    require(file.isDefined, "-file is required")
+    require(file.isDefined, "-csvFile is required")
     log.info(s"read csv file: ${file.get}")
 
-    val res = using(Source.fromFile(file.get)) { source =>
+    val decoder = Codec.UTF8.decoder.onMalformedInput(CodingErrorAction.IGNORE)
+    val res = using(Source.fromFile(file.get)(decoder)) { source =>
       val lines = source.getLines()
 
       val head = lines.next()

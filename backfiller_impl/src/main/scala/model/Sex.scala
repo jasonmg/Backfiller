@@ -5,5 +5,6 @@ package main.scala.model
   */
 object Sex extends Enumeration {
   type Sex = Value
-  val Male, Female = Value
+  val Male = Value("male")
+  val Female = Value("female")
 }
