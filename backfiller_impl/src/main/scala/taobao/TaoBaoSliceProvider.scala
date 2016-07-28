@@ -34,7 +34,7 @@ class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSlic
       val head = lines.next()
       assert(validate(head), s"invalid csv head: $head")
 
-      lines.grouped(sliceWidth).toSeq
+      lines.grouped(sliceWidth).toList.toSeq
     }
 
     res

@@ -10,10 +10,9 @@ import main.scala.core._
 class Controller[CmdLineArgs <: BackfillerArgs](plugin: BaseBackfillerPlugin[CmdLineArgs]) extends Actor with ActorLogging {
 
   import Controller._
-
-  val source = context.actorOf(Source.props(plugin, converter), "Source_actor")
-  val converter = context.actorOf(Converter.props(plugin, sink), "Converter_actor")
   val sink = context.actorOf(Sink.props(plugin, self), "Sink_actor")
+  val converter = context.actorOf(Converter.props(plugin, sink), "Converter_actor")
+  val source = context.actorOf(Source.props(plugin, converter), "Source_actor")
   val slice = context.actorOf(Slice.props(plugin, self, source), "Slice_actor")
 
   def receive = {

@@ -12,6 +12,7 @@ abstract class BackfillerPlugin[T <: Entity, Args <: BackfillerArgs, SourceArg](
 // this trait should only place common default implement
 trait BackfillerPluginBase {
   val cmdLine: BackfillerArgs
+  def onComplete: Unit = {}
   def sinkProvider = new DefaultSinkProvider(cmdLine)
 }
 
@@ -22,6 +23,7 @@ class BaseBackfillerPlugin[Args <: BackfillerArgs](plugin: BackfillerPlugin[Enti
   def sourceProvider = plugin.sourceProvider
   def convertProvider = plugin.convertProvider
   override def sinkProvider = plugin.sinkProvider
+  override def onComplete = plugin.onComplete
 }
 
 

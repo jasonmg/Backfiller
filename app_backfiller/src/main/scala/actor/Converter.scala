@@ -2,6 +2,7 @@ package main.scala.actor
 
 import akka.actor._
 import main.scala.actor.Controller._
+import main.scala.actor.Sink.RequestSink
 import main.scala.core._
 import main.scala.utils.RetryLogic._
 
@@ -19,7 +20,7 @@ class Converter(plugin: BaseBackfillerPlugin[_], sinkActor: ActorRef) extends Ac
 
     case RequestConverter(arg) =>
       val res = retry(arg, plugin.convertProvider.convert)
-    //      sinkActor !
+      sinkActor ! RequestSink(res)
   }
 
 }

@@ -10,4 +10,6 @@ class TaoBaoBackfillerPlugin(args: TaoBaoBackfillerArgs) extends BackfillerPlugi
   def sourceProvider = new TaoBaoSourceProvider()
 
   def convertProvider = new TaoBaoConvertProvider()
+
+  override def sinkProvider = new TaoBaoSinkProvider(args)
 }

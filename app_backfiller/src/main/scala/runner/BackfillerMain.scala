@@ -1,11 +1,14 @@
 package main.scala.runner
 
+import java.io.File
+
 import akka.actor.{ActorSystem, Props}
 import main.scala.actor.Controller
 import main.scala.actor.Controller._
 import main.scala.core._
 import main.scala.utils.{CmdLineParserBase, magic}
 import main.scala.core.BackfillerArgsHandler
+
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 
@@ -18,27 +21,35 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     start
   }
 
+  var plugin: BackfillerPlugin[Entity, Args, Any] = _
+
   def start: Unit = {
 
     val pluginName = cmdLine.pluginName
     val pluginClass = Class.forName(pluginName)
-    val plugin = pluginClass.getConstructors().toSeq.head.newInstance(cmdLine).asInstanceOf[BackfillerPlugin[Entity, Args, Any]]
+    plugin = pluginClass.getConstructors().toSeq.head.newInstance(cmdLine).asInstanceOf[BackfillerPlugin[Entity, Args, Any]]
+
 
     val BasePlugin = new BaseBackfillerPlugin(plugin, cmdLine)
-    val controller = system.actorOf(Props(new Controller(BasePlugin)), "BaseControllerActor")
+    val controller = system.actorOf(Props(new Controller(BasePlugin)), "ControllerActor")
 
     controller ! AllStart
-    //    controller ! AllComplete
-    //    Thread.sleep(5000)
+    system.awaitTermination()
 
-
-    //    system.stop(controller)
+    onTerminate()
   }
 
-  def onComplete() = {
+  def onTerminate() = {
+    val optionSmoke = smokeTest(plugin)
+    optionSmoke.foreach{smoke=> smoke.persistIntoFile(cmdLine.smokeFile.get)}
 
+    plugin.onComplete
+  }
 
-    system.shutdown()
+  def smokeTest(plugin: BackfillerPlugin[Entity, Args, Any]): Option[DefaultSinkProvider] = {
+    if (plugin.cmdLine.smokeFile.isDefined && plugin.sinkProvider.isInstanceOf[DefaultSinkProvider])
+      Some(plugin.sinkProvider.asInstanceOf[DefaultSinkProvider])
+    else None
   }
 
 }
