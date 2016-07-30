@@ -6,6 +6,7 @@ import main.scala.utils.AutoClose._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.{universe => ru}
 import scala.reflect.runtime.universe._
+import scala.collection.mutable
 
 trait SinkProvider {
   def insert(ele: EntityCollection): Unit
@@ -13,24 +14,25 @@ trait SinkProvider {
 
 class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
   def insert(ele: EntityCollection): Unit = {
-    store(args.sinkMode.get, ele)
+    store(ele)
   }
 
-  val cache = new StringBuffer(100)
+  val cache = new mutable.ListBuffer[EntityTpe]
 
-  def store(mode: SinkMode, ele: EntityCollection) = {
-    val res = mode match {
-      case JSON => toJSONOutput(ele.entities.map(_.asInstanceOf[EntityTpe]))
-      case XML => toXMLOutput(ele.entities.map(_.asInstanceOf[EntityTpe]))
-      case CSV => toCSVOutput(ele.entities.map(_.asInstanceOf[EntityTpe]))
+  def store(ele: EntityCollection) = {
+    cache ++= ele.entities.map(_.asInstanceOf[EntityTpe])
+  }
+
+  def persistIntoFile(smokeFile: File, mode: SinkMode): Unit = {
+    def convert(): String = mode match {
+      case JSON => toJSONOutput(cache)
+      case XML => toXMLOutput(cache)
+      case CSV => toCSVOutput(cache)
       case _ => throw new IllegalArgumentException(s"unsupported sink mode: $mode")
     }
-    cache.append(res)
-  }
 
-  def persistIntoFile(smokeFile: File): Unit = {
     using(new PrintWriter(smokeFile)) { printer =>
-      printer.write(cache.toString)
+      printer.write(convert())
     }
   }
 
@@ -74,7 +76,7 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
       val runTimeClassName = getRunTimeClassName(entities.head)
       val sb = new StringBuffer(100)
 
-//      sb.append("<root>")
+      sb.append("<root>")
       eleNValues map { eleNValue =>
         sb.append(s"<$runTimeClassName>")
         eleNValue map {
@@ -82,7 +84,7 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
         }
         sb.append(s"</$runTimeClassName>")
       }
-//      sb.append("</root>")
+      sb.append("</root>")
 
       sb.toString
     } else "<root></root>"

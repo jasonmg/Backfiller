@@ -38,7 +38,7 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
 
   def onTerminate(plugin: BaseBackfillerPlugin[Args]) = {
     val optionSmoke = isSmokeTest(plugin)
-    optionSmoke.foreach { smoke => smoke.persistIntoFile(cmdLine.smokeFile.get) }
+    optionSmoke.foreach { smoke => smoke.persistIntoFile(cmdLine.smokeFile.get, cmdLine.sinkMode) }
 
     plugin.onComplete
   }

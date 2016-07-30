@@ -28,9 +28,9 @@ class BackfillerArgs {
   @args4j.Option(name = "--sinkMode", usage = "smokeFile is for save back fill date into it instead of in database or somewhere else",
     required = false)
   def setSinkMode(name:String): Unit ={
-    sinkMode = Some(SinkMode.withName(name))
+    sinkMode = SinkMode.withName(name)
   }
-  var sinkMode: Option[SinkMode] = None
+  var sinkMode: SinkMode = JSON
 }
 
 object BackfillerArgsHandler {
