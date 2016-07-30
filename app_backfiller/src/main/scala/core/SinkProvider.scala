@@ -1,11 +1,8 @@
 package main.scala.core
 
 import java.io.{File, PrintWriter}
-
 import main.scala.model.SinkMode._
 import main.scala.utils.AutoClose._
-
-import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
 import scala.reflect.runtime.{universe => ru}
 import scala.reflect.runtime.universe._
@@ -19,29 +16,28 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
     store(args.sinkMode.get, ele)
   }
 
-  val cacheResult = new ArrayBuffer[String](100)
+  val cache = new StringBuffer(100)
 
   def store(mode: SinkMode, ele: EntityCollection) = {
     val res = mode match {
-      case JSON => toJSONOutput(ele.entities.map(_.asInstanceOf[T]))
-      case XML => toXMLOutput(ele.entities)
-      case CSV => toCSVOutput(ele.entities.map(_.asInstanceOf[T]))
+      case JSON => toJSONOutput(ele.entities.map(_.asInstanceOf[EntityTpe]))
+      case XML => toXMLOutput(ele.entities.map(_.asInstanceOf[EntityTpe]))
+      case CSV => toCSVOutput(ele.entities.map(_.asInstanceOf[EntityTpe]))
       case _ => throw new IllegalArgumentException(s"unsupported sink mode: $mode")
     }
-    cacheResult.append(res)
+    cache.append(res)
   }
 
   def persistIntoFile(smokeFile: File): Unit = {
     using(new PrintWriter(smokeFile)) { printer =>
-      printer.write(cacheResult.toString)
+      printer.write(cache.toString)
     }
   }
 
-  type T <: Entity
-
-  protected def toJSONOutput(entities: Seq[T]): String = throw new RuntimeException("please implement toJSONOutput before invoke.")
-
-  protected def toCSVOutput(entities: Seq[T]): String = throw new RuntimeException("please implement toCSVOutput before invoke.")
+  type EntityTpe <: Entity
+  protected def toJSONOutput(entities: Seq[EntityTpe]): String = throw new RuntimeException("please implement toJSONOutput before invoke.")
+  protected def toXMLOutput(entities: Seq[EntityTpe]): String =  throw new RuntimeException("please use toXMLOutputCommon implement toXMLOutput before invoke.")
+  protected def toCSVOutput(entities: Seq[EntityTpe]): String = throw new RuntimeException("please implement toCSVOutput before invoke.")
 
   private[core] def getEntityElementName[T: ru.TypeTag](entity: T): Seq[(String, Type)] = {
     val theType = ru.typeTag[T].tpe
@@ -71,14 +67,14 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
       }
     }
 
-  private[core] def toXMLOutput[T: ru.TypeTag : ClassTag](entities: Seq[T]): String = {
+  final def toXMLOutputCommon[T: ru.TypeTag : ClassTag](entities: Seq[T]): String = {
     val res = if (entities.nonEmpty) {
       val eleNType = getEntityElementName(entities.head)
       val eleNValues = extractElementTpeValue(entities, eleNType.toMap)
       val runTimeClassName = getRunTimeClassName(entities.head)
       val sb = new StringBuffer(100)
 
-      sb.append("<root>")
+//      sb.append("<root>")
       eleNValues map { eleNValue =>
         sb.append(s"<$runTimeClassName>")
         eleNValue map {
@@ -86,7 +82,7 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
         }
         sb.append(s"</$runTimeClassName>")
       }
-      sb.append("</root>")
+//      sb.append("</root>")
 
       sb.toString
     } else "<root></root>"

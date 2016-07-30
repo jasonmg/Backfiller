@@ -40,7 +40,7 @@ class SinkProviderTest extends FlatSpec with Matchers {
     val foo = new Foo("test", 28)
     val foo1 = new Foo("test1", 29)
 
-    val res = sinkProvider.toXMLOutput(Seq(foo,foo1))
+    val res = sinkProvider.toXMLOutputCommon(Seq(foo,foo1))
     val resX = XML.loadString(res)
     val foos = resX \\ "Foo"
 

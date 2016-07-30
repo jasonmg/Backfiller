@@ -1,6 +1,6 @@
 package main.scala.core
 
 
-trait ConvertProvider[T <: Entity] {
-  def convert(source: Seq[T]): EntityCollection
+trait ConvertProvider[In] {
+  def convert(source: Seq[In]): EntityCollection
 }

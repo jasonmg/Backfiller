@@ -1,6 +1,6 @@
 package main.scala.core
 
 
-trait SourceProvider[T, SourceArg] {
-  def load(sourceArg: SourceArg): Traversable[T]
+trait SourceProvider[In, SourceArg] {
+  def load(sourceArg: SourceArg): Traversable[In]
 }

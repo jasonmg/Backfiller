@@ -16,11 +16,15 @@ class Converter(plugin: BaseBackfillerPlugin[_], sinkActor: ActorRef) extends Ac
   def receive = {
     case StartConverter =>
       log.info("start converter actor ")
-      sender() ! StartConverterDone
+      sender() ! StartConverter
 
     case RequestConverter(arg) =>
       val res = retry(arg, plugin.convertProvider.convert)
       sinkActor ! RequestSink(res)
+
+    case Controller.ShutDown =>
+      sender() ! ConverterComplete
+      context.stop(self)
   }
 
 }
@@ -30,6 +34,6 @@ object Converter {
     Props(new Converter(plugin, sinkActor))
   }
 
-  case class RequestConverter(arg: Seq[Entity])
+  case class RequestConverter(arg: Seq[Any])
 
 }

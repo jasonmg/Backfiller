@@ -8,29 +8,30 @@ import main.scala.utils.RetryLogic._
 /**
   * Sink response for persistent data into specific destination
   */
-class Sink(plugin: BaseBackfillerPlugin[_], controllerActor: ActorRef) extends Actor with ActorLogging {
-
+class Sink(plugin: BaseBackfillerPlugin[_], controller: ActorRef) extends Actor with ActorLogging {
   import Sink._
 
   def receive = {
     case StartSink =>
       log.info("start sink actor ")
-      sender() ! StartSinkDone
+      sender() ! StartSink
 
     case RequestSink(ele) =>
       retry(ele, plugin.sinkProvider.insert)
-      controllerActor ! SinkComplete
+      controller ! SinkComplete
+
+    case Controller.ShutDown =>
+      sender() ! SinkComplete
+      context.stop(self)
 
   }
 
 }
 
 object Sink {
-  def props(plugin: BaseBackfillerPlugin[_], controllerActor: ActorRef) = {
-    Props(new Sink(plugin, controllerActor))
+  def props(plugin: BaseBackfillerPlugin[_], controller: ActorRef) = {
+    Props(new Sink(plugin, controller))
   }
 
   case class RequestSink(arg: EntityCollection)
-  case object SinkComplete
-
 }

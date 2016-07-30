@@ -6,9 +6,11 @@ import spray.json._
 import main.scala.model.TaoBaoCSVJsonProtocol._
 
 class TaoBaoSinkProvider(args: TaoBaoBackfillerArgs) extends DefaultSinkProvider(args) {
-  type T = TaoBaoCSVEntity
+  type EntityTpe = TaoBaoCSVEntity
 
   override def toJSONOutput(entities: Seq[TaoBaoCSVEntity]): String =
     entities.toJson.prettyPrint
+
+  override def toXMLOutput(entities: Seq[TaoBaoCSVEntity]):String = toXMLOutputCommon(entities)
 
 }

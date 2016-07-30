@@ -16,12 +16,17 @@ class Source(plugin: BaseBackfillerPlugin[_], convertActor: ActorRef) extends Ac
   def receive = {
     case StartSource =>
       log.info("start source actor.")
-      sender() ! StartSourceDone
+      sender() ! StartSource
     case RequestSource(arg) =>
       log.info(s"request source from: ${plugin.getClass.getName}")
       val res = retry(arg, plugin.sourceProvider.load)
 
       convertActor ! RequestConverter(res.toSeq)
+
+
+    case Controller.ShutDown =>
+      sender() ! SourceComplete
+      context.stop(self)
   }
 }
 
