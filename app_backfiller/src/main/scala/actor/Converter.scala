@@ -9,7 +9,7 @@ import main.scala.utils.RetryLogic._
 /**
   * Converter response for convert source data into desired data type
   */
-class Converter(plugin: BaseBackfillerPlugin[_], sinkActor: ActorRef) extends Actor with ActorLogging {
+class Converter(plugin: BackfillerPluginFacade[_], sinkActor: ActorRef) extends Actor with ActorLogging {
 
   import Converter._
 
@@ -30,7 +30,7 @@ class Converter(plugin: BaseBackfillerPlugin[_], sinkActor: ActorRef) extends Ac
 }
 
 object Converter {
-  def props(plugin: BaseBackfillerPlugin[_], sinkActor: ActorRef) = {
+  def props(plugin: BackfillerPluginFacade[_], sinkActor: ActorRef) = {
     Props(new Converter(plugin, sinkActor))
   }
 

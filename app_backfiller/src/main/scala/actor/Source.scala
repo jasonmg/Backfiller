@@ -9,7 +9,7 @@ import main.scala.utils.RetryLogic._
 /**
   * Source response for read data from diverse resource system
   */
-class Source(plugin: BaseBackfillerPlugin[_], convertActor: ActorRef) extends Actor with ActorLogging {
+class Source(plugin: BackfillerPluginFacade[_], convertActor: ActorRef) extends Actor with ActorLogging {
 
   import Source._
 
@@ -31,7 +31,7 @@ class Source(plugin: BaseBackfillerPlugin[_], convertActor: ActorRef) extends Ac
 }
 
 object Source {
-  def props(plugin: BaseBackfillerPlugin[_], convertActor: ActorRef) =
+  def props(plugin: BackfillerPluginFacade[_], convertActor: ActorRef) =
     Props(new Source(plugin, convertActor))
 
 

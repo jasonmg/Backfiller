@@ -27,7 +27,7 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
 
     val plugin  = pluginCompanion(cmdLine)
 
-    val BasePlugin = new BaseBackfillerPlugin(plugin)
+    val BasePlugin = new BackfillerPluginFacade(plugin)
     val controller = system.actorOf(Props(new Controller(BasePlugin)), "ControllerActor")
 
     controller ! AllStart
@@ -36,14 +36,14 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     onTerminate(BasePlugin)
   }
 
-  def onTerminate(plugin: BaseBackfillerPlugin[Args]) = {
+  def onTerminate(plugin: BackfillerPluginFacade[Args]) = {
     val optionSmoke = isSmokeTest(plugin)
     optionSmoke.foreach { smoke => smoke.persistIntoFile(cmdLine.smokeFile.get, cmdLine.sinkMode) }
 
     plugin.onComplete
   }
 
-  def isSmokeTest(plugin: BaseBackfillerPlugin[Args]): Option[DefaultSinkProvider] = {
+  def isSmokeTest(plugin: BackfillerPluginFacade[Args]): Option[DefaultSinkProvider] = {
     if (plugin.cmdLine.smokeFile.isDefined && plugin.sinkProvider.isInstanceOf[DefaultSinkProvider])
       Some(plugin.sinkProvider.asInstanceOf[DefaultSinkProvider])
     else None

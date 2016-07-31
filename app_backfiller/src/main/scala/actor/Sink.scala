@@ -8,7 +8,7 @@ import main.scala.utils.RetryLogic._
 /**
   * Sink response for persistent data into specific destination
   */
-class Sink(plugin: BaseBackfillerPlugin[_], controller: ActorRef) extends Actor with ActorLogging {
+class Sink(plugin: BackfillerPluginFacade[_], controller: ActorRef) extends Actor with ActorLogging {
   import Sink._
 
   def receive = {
@@ -29,7 +29,7 @@ class Sink(plugin: BaseBackfillerPlugin[_], controller: ActorRef) extends Actor 
 }
 
 object Sink {
-  def props(plugin: BaseBackfillerPlugin[_], controller: ActorRef) = {
+  def props(plugin: BackfillerPluginFacade[_], controller: ActorRef) = {
     Props(new Sink(plugin, controller))
   }
 

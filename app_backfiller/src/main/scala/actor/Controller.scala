@@ -24,7 +24,7 @@ object Controller {
 /**
   * It's the controller class to coordinate the work flow.
   */
-class Controller[CmdLineArgs <: BackfillerArgs](plugin: BaseBackfillerPlugin[CmdLineArgs]) extends Actor with ActorLogging {
+class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs]) extends Actor with ActorLogging {
 
   import Controller._
 
