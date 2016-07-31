@@ -2,6 +2,8 @@ package main.scala.core
 
 import java.io.{File, PrintWriter}
 
+import main.scala.model
+import main.scala.model.Entity
 import main.scala.model.SinkMode._
 import main.scala.utils.AutoClose._
 import main.scala.utils.XMLUtil
@@ -9,17 +11,17 @@ import main.scala.utils.XMLUtil
 import scala.collection.mutable
 
 trait SinkProvider {
-  def insert(ele: EntityCollection): Unit
+  def insert(ele: model.EntityCollection): Unit
 }
 
 class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
-  def insert(ele: EntityCollection): Unit = {
+  def insert(ele: model.EntityCollection): Unit = {
     store(ele)
   }
 
   val cache = new mutable.ListBuffer[EntityTpe]
 
-  def store(ele: EntityCollection) = {
+  def store(ele: model.EntityCollection) = {
     cache ++= ele.entities.map(_.asInstanceOf[EntityTpe])
   }
 

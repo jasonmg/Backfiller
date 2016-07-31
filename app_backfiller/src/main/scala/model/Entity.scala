@@ -1,11 +1,7 @@
-package main.scala.core
+package main.scala.model
 
 // this is the unify trait that every persistent class need inherit
-sealed trait Entity extends Serializable
-
-abstract class CSVEntity extends Entity
-abstract class JsonEntity extends Entity
-abstract class XMLEntity extends Entity
+trait Entity extends Serializable
 
 
 trait EntityCollection {

@@ -2,17 +2,14 @@ package main.scala.taobao
 
 import java.io.File
 import java.nio.charset.CodingErrorAction
-
 import main.scala.core.SliceProvider
-import main.scala.model.TaoBaoCSV
+import main.scala.model.TaoBaoEntityValidation._
 import main.scala.utils.AutoClose._
 import main.scala.utils.Log
-import TaoBaoCSV._
 
 import scala.io.{Codec, Source}
 
 class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSliceOut] with Log {
-
   import TaoBaoSliceProvider._
 
   def slice(args: TaoBaoBackfillerArgs): Seq[TaoBaoSliceOut] = {

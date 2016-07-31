@@ -1,17 +1,17 @@
 package main.scala.taobao
 
 import main.scala.core.DefaultSinkProvider
-import main.scala.model.TaoBaoCSVEntity
+import main.scala.model.TaoBaoEntity
 import spray.json._
-import main.scala.model.TaoBaoCSVJsonProtocol._
+import main.scala.model.TaoBaoEntityJsonProtocol._
 import main.scala.utils.XMLUtil
 
 class TaoBaoSinkProvider(args: TaoBaoBackfillerArgs) extends DefaultSinkProvider(args) {
-  type EntityTpe = TaoBaoCSVEntity
+  type EntityTpe = TaoBaoEntity
 
-  override def toJSONOutput(entities: Seq[TaoBaoCSVEntity]): String =
+  override def toJSONOutput(entities: Seq[TaoBaoEntity]): String =
     entities.toJson.prettyPrint
 
-  override def toXMLOutput(entities: Seq[TaoBaoCSVEntity]):String = XMLUtil.toXML(entities)
+  override def toXMLOutput(entities: Seq[TaoBaoEntity]):String = XMLUtil.toXML(entities)
 
 }

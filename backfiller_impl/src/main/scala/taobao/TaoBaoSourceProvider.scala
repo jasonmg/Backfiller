@@ -2,16 +2,16 @@ package main.scala.taobao
 
 import main.scala.core.SourceProvider
 import main.scala.model.{Sex, TaoBaoCSV}
-import main.scala.model.TaoBaoCSVEntity
+import main.scala.model.TaoBaoEntity
 
-class TaoBaoSourceProvider extends SourceProvider[TaoBaoCSVEntity, TaoBaoSliceOut] {
+class TaoBaoSourceProvider extends SourceProvider[TaoBaoEntity, TaoBaoSliceOut] {
 
-  def load(sourceArg: TaoBaoSliceOut): Traversable[TaoBaoCSVEntity] = {
+  def load(sourceArg: TaoBaoSliceOut): Traversable[TaoBaoEntity] = {
 
     sourceArg map { line =>
       val columns = line.trim.split(",")
 
-      TaoBaoCSVEntity(columns(0).toLong, columns(1), columns(2).toInt, Sex.withName(columns(3)),
+      TaoBaoEntity(columns(0).toLong, columns(1), columns(2).toInt, Sex.withName(columns(3)),
         columns(4).toBoolean, columns(5), columns(6))
     }
   }

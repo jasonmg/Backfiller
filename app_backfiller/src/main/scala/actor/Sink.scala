@@ -3,6 +3,7 @@ package main.scala.actor
 import akka.actor._
 import main.scala.actor.Controller._
 import main.scala.core._
+import main.scala.model
 import main.scala.utils.RetryLogic._
 
 /**
@@ -32,5 +33,5 @@ object Sink {
     Props(new Sink(plugin, controller))
   }
 
-  case class RequestSink(arg: EntityCollection)
+  case class RequestSink(arg: model.EntityCollection)
 }
