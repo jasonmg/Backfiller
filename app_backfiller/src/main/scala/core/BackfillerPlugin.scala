@@ -1,11 +1,10 @@
 package main.scala.core
 
-import main.scala.utils.Log
-
 // User should extends BackfillerPlugin for implementation
 abstract class BackfillerPlugin[In, Args <: BackfillerArgs, SourceArg](val cmdLine: Args) extends BackfillerPluginBase {
   def sliceProvider: SliceProvider[Args, SourceArg]
   def sourceProvider: SourceProvider[In, SourceArg]
+  def filterProvider: FilterProvider[In]
   def convertProvider: ConvertProvider[In]
 }
 

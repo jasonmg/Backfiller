@@ -13,15 +13,14 @@ class Sink(plugin: BackfillerPluginFacade[_], controller: ActorRef) extends Acto
 
   def receive = {
     case StartSink =>
-      log.info("start sink actor ")
-      sender() ! StartSink
+      sender ! StartSink
 
     case RequestSink(ele) =>
       retry(ele, plugin.sinkProvider.insert)
       controller ! SinkComplete
 
     case Controller.ShutDown =>
-      sender() ! SinkComplete
+      sender ! SinkComplete
       context.stop(self)
 
   }

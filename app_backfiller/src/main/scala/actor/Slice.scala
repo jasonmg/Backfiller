@@ -9,21 +9,22 @@ import main.scala.actor.Source.RequestSource
 import main.scala.utils.RetryLogic._
 import scala.collection.JavaConverters._
 
-class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, sourceActor: ActorRef) extends Actor with ActorLogging {
+class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, source: ActorRef) extends Actor with ActorLogging {
   import Slice._
 
   val workQueue = new java.util.ArrayDeque[Seq[_]]()
 
   def receive = {
-    case StartSlice => sender() ! StartSlice
+    case StartSlice => sender ! StartSlice
+
     case RequestSlice =>
       val sliceRes = plugin.sliceProvider.slice(plugin.cmdLine)
-      sliceRes foreach { res => sourceActor ! RequestSource(res) }
+      sliceRes foreach { res => source ! RequestSource(res) }
       controller ! AllSliceSent
       context.become(awaitTerminate)
   }
 
-  def awaitTerminate:Actor.Receive ={
+  def awaitTerminate: Actor.Receive ={
     case RequestSlice =>
       log.info(s"wait for terminate, can't accept any request")
     case Controller.ShutDown =>
@@ -34,8 +35,8 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
 
 object Slice {
 
-  def props[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controllerActor: ActorRef, sourceActor: ActorRef) = {
-    Props(new Slice(plugin, controllerActor, sourceActor))
+  def props[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, source: ActorRef) = {
+    Props(new Slice(plugin, controller, source))
   }
 
   case object RequestSlice

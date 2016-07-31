@@ -10,15 +10,17 @@ import main.scala.utils.Log
 class BackfillerPluginFacade[Args <: BackfillerArgs](plugin: BackfillerPlugin[Any , Args, Any]) extends Log{
 
   // use val here is because make sure the provider initialise only once
-  val _sinkProvider = plugin.sinkProvider
-  val _sliceProvider = plugin.sliceProvider
-  val _sourceProvider = plugin.sourceProvider
-  val _convertProvider = plugin.convertProvider
+  private val _sinkProvider = plugin.sinkProvider
+  private val _sliceProvider = plugin.sliceProvider
+  private val _sourceProvider = plugin.sourceProvider
+  private val _convertProvider = plugin.convertProvider
+  private val _filterProvider = plugin.filterProvider
 
   val cmdLine: Args = plugin.cmdLine
   def sliceProvider = _sliceProvider
   def sourceProvider = _sourceProvider
   def convertProvider = _convertProvider
   def sinkProvider = _sinkProvider
+  def filterProvider = _filterProvider
   def onComplete = plugin.onComplete
 }

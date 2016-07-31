@@ -9,29 +9,28 @@ import main.scala.utils.RetryLogic._
 /**
   * Converter response for convert source data into desired data type
   */
-class Converter(plugin: BackfillerPluginFacade[_], sinkActor: ActorRef) extends Actor with ActorLogging {
+class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef) extends Actor with ActorLogging {
 
   import Converter._
 
   def receive = {
     case StartConverter =>
-      log.info("start converter actor ")
-      sender() ! StartConverter
+      sender ! StartConverter
 
     case RequestConverter(arg) =>
       val res = retry(arg, plugin.convertProvider.convert)
-      sinkActor ! RequestSink(res)
+      sink ! RequestSink(res)
 
     case Controller.ShutDown =>
-      sender() ! ConverterComplete
+      sender ! ConverterComplete
       context.stop(self)
   }
 
 }
 
 object Converter {
-  def props(plugin: BackfillerPluginFacade[_], sinkActor: ActorRef) = {
-    Props(new Converter(plugin, sinkActor))
+  def props(plugin: BackfillerPluginFacade[_], sink: ActorRef) = {
+    Props(new Converter(plugin, sink))
   }
 
   case class RequestConverter(arg: Seq[Any])
