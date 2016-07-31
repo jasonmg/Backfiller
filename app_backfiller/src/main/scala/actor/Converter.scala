@@ -5,11 +5,12 @@ import main.scala.actor.Controller._
 import main.scala.actor.Sink.RequestSink
 import main.scala.core._
 import main.scala.utils.RetryLogic._
+import main.scala.actor.Statistic._
 
 /**
   * Converter response for convert source data into desired data type
   */
-class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef) extends Actor with ActorLogging {
+class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef, statistic: ActorRef) extends Actor with ActorLogging {
 
   import Converter._
 
@@ -19,6 +20,7 @@ class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef) extends Actor
 
     case RequestConverter(arg) =>
       val res = retry(arg, plugin.convertProvider.convert)
+      statistic ! ConvertRecord
       sink ! RequestSink(res)
 
     case Controller.ShutDown =>
@@ -29,8 +31,8 @@ class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef) extends Actor
 }
 
 object Converter {
-  def props(plugin: BackfillerPluginFacade[_], sink: ActorRef) = {
-    Props(new Converter(plugin, sink))
+  def props(plugin: BackfillerPluginFacade[_], sink: ActorRef, statistic: ActorRef) = {
+    Props(new Converter(plugin, sink, statistic))
   }
 
   case class RequestConverter(arg: Seq[Any])

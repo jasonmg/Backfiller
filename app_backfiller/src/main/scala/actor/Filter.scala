@@ -4,11 +4,9 @@ import akka.actor._
 import main.scala.actor.Controller._
 import main.scala.actor.Converter.RequestConverter
 import main.scala.core.BackfillerPluginFacade
+import main.scala.actor.Statistic._
 
-/**
-  * Created by Administrator on 2016-07-31.
-  */
-class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef) extends Actor with ActorLogging {
+class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef) extends Actor with ActorLogging {
 
   import Filter._
 
@@ -19,6 +17,7 @@ class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef) extends Act
     case RequestFilter(args) =>
       val filter = plugin.filterProvider
       val filterRes = filter.filter(args)
+      statistic ! FilterRecord
       converter ! RequestConverter(filterRes)
 
     case ShutDown=>
@@ -31,5 +30,6 @@ object Filter {
 
   case class RequestFilter(args: Seq[Any])
 
-  def props(plugin: BackfillerPluginFacade[_], converter: ActorRef) = Props(new Filter(plugin, converter))
+  def props(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef) =
+    Props(new Filter(plugin, converter, statistic))
 }

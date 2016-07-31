@@ -113,5 +113,29 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://E:/jar/metrics-core-3.2.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://E:/jar/metrics-3.2-development/metrics-core/target/metrics-core-3.2.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://E:/jar/slf4j-api-1.7.21.jar!/" />
+          <root url="jar://E:/jar/slf4j-ext-1.7.21.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://E:/jar/slf4j-api-1.7.21-sources.jar!/" />
+          <root url="jar://E:/jar/slf4j-ext-1.7.21-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
