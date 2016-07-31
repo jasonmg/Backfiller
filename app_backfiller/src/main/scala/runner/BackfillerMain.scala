@@ -6,9 +6,6 @@ import main.scala.actor.Controller._
 import main.scala.core._
 import main.scala.utils.{CmdLineParserBase, magic}
 import main.scala.core.BackfillerArgsHandler
-
-import scala.collection.JavaConverters._
-import scala.collection.JavaConversions._
 import scala.reflect.internal.MissingRequirementError
 
 abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultTo[Args, BackfillerArgs], val manifest: Manifest[Args]) extends CmdLineParserBase[Args] {
@@ -20,20 +17,19 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
   }
 
   def start: Unit = {
-    val system = ActorSystem("BaseBackfillerSystem")
+    val system = ActorSystem("BackfillerSystem")
 
     val pluginName = cmdLine.pluginName
     val pluginCompanion = createPlugin(pluginName)
 
     val plugin  = pluginCompanion(cmdLine)
 
-    val BasePlugin = new BackfillerPluginFacade(plugin)
-    val controller = system.actorOf(Props(new Controller(BasePlugin)), "ControllerActor")
+    val pluginFacade = new BackfillerPluginFacade(plugin)
+    val controller = system.actorOf(Props(new Controller(pluginFacade)), "controller")
 
     controller ! AllStart
     system.awaitTermination()
-//    val a = BasePlugin.sinkProvider.cacheResult
-    onTerminate(BasePlugin)
+    onTerminate(pluginFacade)
   }
 
   def onTerminate(plugin: BackfillerPluginFacade[Args]) = {

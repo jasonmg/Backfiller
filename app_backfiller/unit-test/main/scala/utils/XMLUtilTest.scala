@@ -1,19 +1,18 @@
-package main.scala.core
+package main.scala.utils
 
-import org.scalatest._
-
+import org.scalatest.{FlatSpec, Matchers}
+import scala.xml.XML
 import scala.reflect.runtime.universe._
-import scala.xml.{Elem, Node, Text, XML}
 
-class SinkProviderTest extends FlatSpec with Matchers {
+
+class XMLUtilTest  extends FlatSpec with Matchers {
 
   class Foo(val name: String, val age: Int)
-  private val sinkProvider = new DefaultSinkProvider(new BackfillerArgsTest)
 
-  "SinkProvider" should "able extract instance value" in {
+  "XMLUtil" should "able extract instance value" in {
     val foo = new Foo("test", 28)
 
-    val res = sinkProvider.extractElementValue(foo, Seq("name", "age"))
+    val res = XMLUtil.getElementValue(foo, Seq("name", "age"))
 
     res should have size 2
     res should (contain key "name" and contain value "test")
@@ -22,14 +21,14 @@ class SinkProviderTest extends FlatSpec with Matchers {
 
   it should "get runtime class name" in {
     val foo = new Foo("test", 28)
-    val name = sinkProvider.getRunTimeClassName(foo)
+    val name = XMLUtil.getRunTimeClassName(foo)
 
     name shouldEqual("Foo")
   }
 
   it should "able extract class parameter name and it's type" in {
     val foo = new Foo("test", 28)
-    val res = sinkProvider.getEntityElementName(foo)
+    val res = XMLUtil.getElementName(foo)
 
     res should have size 2
     res.head should equal ("name", typeOf[String])
@@ -40,7 +39,7 @@ class SinkProviderTest extends FlatSpec with Matchers {
     val foo = new Foo("test", 28)
     val foo1 = new Foo("test1", 29)
 
-    val res = sinkProvider.toXMLOutputCommon(Seq(foo,foo1))
+    val res = XMLUtil.toXML(Seq(foo,foo1))
     val resX = XML.loadString(res)
     val foos = resX \\ "Foo"
 
@@ -56,9 +55,4 @@ class SinkProviderTest extends FlatSpec with Matchers {
     f0Age.text should === ("28")
   }
 
-  it should "success" in {
-  }
-
 }
-
-class BackfillerArgsTest extends BackfillerArgs
