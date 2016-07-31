@@ -1,8 +1,10 @@
 package main.scala.core
 
 import java.io.{File, PrintWriter}
+
 import main.scala.model.SinkMode._
 import main.scala.utils.AutoClose._
+import main.scala.utils.XMLUtil
 
 import scala.collection.mutable
 
@@ -36,10 +38,7 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
 
   type EntityTpe <: Entity
   protected def toJSONOutput(entities: Seq[EntityTpe]): String = throw new RuntimeException("please implement toJSONOutput before invoke.")
-  protected def toXMLOutput(entities: Seq[EntityTpe]): String =  throw new RuntimeException("please use toXMLOutputCommon implement toXMLOutput before invoke.")
+  protected def toXMLOutput(entities: Seq[EntityTpe]): String = throw new RuntimeException("please use XMLUtil.toXML implement toXMLOutput before invoke.")
   protected def toCSVOutput(entities: Seq[EntityTpe]): String = throw new RuntimeException("please implement toCSVOutput before invoke.")
-
-
-
 }
 
