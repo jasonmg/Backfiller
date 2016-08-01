@@ -10,10 +10,12 @@ import main.scala.actor.Statistic._
 /**
   * Sink response for persistent data into specific destination
   */
-class Sink(plugin: BackfillerPluginFacade[_], controller: ActorRef, statistic: ActorRef) extends Actor with ActorLogging {
+class Sink(plugin: BackfillerPluginFacade[_], controller: ActorRef, statistic: ActorRef) extends Actor
+  with ActorLogging with ReSubmit {
+
   import Sink._
 
-  def receive = {
+  def _receive: Receive = {
     case StartSink =>
       sender ! StartSink
 
@@ -31,9 +33,10 @@ class Sink(plugin: BackfillerPluginFacade[_], controller: ActorRef, statistic: A
 }
 
 object Sink {
-  def props(plugin: BackfillerPluginFacade[_], controller: ActorRef ,  statistic: ActorRef) = {
+  def props(plugin: BackfillerPluginFacade[_], controller: ActorRef, statistic: ActorRef) = {
     Props(new Sink(plugin, controller, statistic))
   }
 
   case class RequestSink(arg: model.EntityCollection)
+
 }

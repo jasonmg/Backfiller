@@ -6,11 +6,12 @@ import main.scala.actor.Converter.RequestConverter
 import main.scala.core.BackfillerPluginFacade
 import main.scala.actor.Statistic._
 
-class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef) extends Actor with ActorLogging {
+class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef)
+  extends Actor with ActorLogging with ReSubmit{
 
   import Filter._
 
-  def receive = {
+  def _receive: Receive = {
     case StartFilter =>
       sender ! StartFilter
 

@@ -10,11 +10,12 @@ import main.scala.actor.Statistic._
 /**
   * Source response for read data from diverse resource system
   */
-class Source(plugin: BackfillerPluginFacade[_], filter: ActorRef, statistic: ActorRef) extends Actor with ActorLogging {
+class Source(plugin: BackfillerPluginFacade[_], filter: ActorRef, statistic: ActorRef)
+  extends Actor with ActorLogging with ReSubmit{
 
   import Source._
 
-  def receive = {
+  def _receive: Receive = {
     case StartSource =>
       sender ! StartSource
 

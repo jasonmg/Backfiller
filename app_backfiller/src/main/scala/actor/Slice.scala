@@ -10,13 +10,14 @@ import main.scala.utils.RetryLogic._
 import scala.collection.JavaConverters._
 import main.scala.actor.Statistic._
 
-class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, source: ActorRef, statistic: ActorRef) extends Actor with ActorLogging {
+class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, source: ActorRef, statistic: ActorRef)
+  extends Actor with ActorLogging with ReSubmit {
 
   import Slice._
 
   val workQueue = new java.util.ArrayDeque[Seq[_]]()
 
-  def receive = {
+  def _receive: Receive = {
     case StartSlice => sender ! StartSlice
 
     case RequestSlice =>

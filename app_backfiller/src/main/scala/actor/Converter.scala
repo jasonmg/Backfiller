@@ -10,11 +10,12 @@ import main.scala.actor.Statistic._
 /**
   * Converter response for convert source data into desired data type
   */
-class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef, statistic: ActorRef) extends Actor with ActorLogging {
+class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef, statistic: ActorRef)
+  extends Actor with ActorLogging with ReSubmit{
 
   import Converter._
 
-  def receive = {
+  def _receive: Receive = {
     case StartConverter =>
       sender ! StartConverter
 
