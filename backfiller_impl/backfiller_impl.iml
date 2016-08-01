@@ -8,7 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="scala-sdk-2.11.8" level="application" />
-    <orderEntry type="module" module-name="app_backfiller" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -78,5 +77,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="backfiller_common" />
   </component>
 </module>
