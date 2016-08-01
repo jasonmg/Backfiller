@@ -1,9 +1,9 @@
-package main.scala
+package main.scala.taobao
 
 /**
   * Created by Administrator on 2016-07-12.
   */
-package object taobao {
+package object core {
 
   type TaoBaoSliceOut = Seq[String]
 

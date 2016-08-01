@@ -1,7 +1,8 @@
-package main.scala.taobao
+package main.scala.taobao.core
 
 import main.scala.core.ConvertProvider
-import main.scala.model.{EntityCollection, TaoBaoEntity}
+import main.scala.model.EntityCollection
+import main.scala.taobao.model.TaoBaoEntity
 
 
 class TaoBaoConvertProvider extends ConvertProvider[TaoBaoEntity] {

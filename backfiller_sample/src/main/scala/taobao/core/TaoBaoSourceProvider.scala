@@ -1,7 +1,8 @@
-package main.scala.taobao
+package main.scala.taobao.core
 
 import main.scala.core.SourceProvider
-import main.scala.model._
+import main.scala.taobao.model.TaoBaoEntity
+import main.scala.taobao.model.Sex
 
 class TaoBaoSourceProvider extends SourceProvider[TaoBaoEntity, TaoBaoSliceOut] {
 
@@ -14,9 +15,4 @@ class TaoBaoSourceProvider extends SourceProvider[TaoBaoEntity, TaoBaoSliceOut] 
         columns(4).toBoolean, columns(5), columns(6))
     }
   }
-}
-
-
-object TaoBaoSourceProvider {
-
 }

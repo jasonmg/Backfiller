@@ -1,10 +1,10 @@
-package main.scala.taobao
+package main.scala.taobao.core
 
 import main.scala.core.DefaultSinkProvider
-import main.scala.model.TaoBaoEntity
-import spray.json._
-import main.scala.model.TaoBaoEntityJsonProtocol._
+import main.scala.taobao.model.TaoBaoEntity
+import main.scala.taobao.model.TaoBaoEntityJsonProtocol._
 import main.scala.utils.XMLUtil
+import spray.json._
 
 class TaoBaoSinkProvider(args: TaoBaoBackfillerArgs) extends DefaultSinkProvider(args) {
   type EntityTpe = TaoBaoEntity

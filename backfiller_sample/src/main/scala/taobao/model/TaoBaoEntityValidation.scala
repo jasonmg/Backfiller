@@ -1,5 +1,4 @@
-package main.scala.model
-
+package main.scala.taobao.model
 
 object TaoBaoEntityValidation {
 

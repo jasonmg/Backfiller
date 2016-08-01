@@ -1,4 +1,6 @@
-package main.scala.model
+package main.scala.taobao.model
+
+import main.scala.model.Entity
 
 case class TaoBaoEntity(id: Long,
                         name: String,

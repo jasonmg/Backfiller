@@ -1,7 +1,7 @@
-package main.scala.taobao
+package main.scala.taobao.core
 
 import main.scala.core.{BackfillerPlugin, BackfillerPluginCompanion}
-import main.scala.model.TaoBaoEntity
+import main.scala.taobao.model.TaoBaoEntity
 
 object TaoBaoBackfillerPlugin extends BackfillerPluginCompanion[TaoBaoEntity, TaoBaoBackfillerArgs, TaoBaoSliceOut] {
   def apply(args: TaoBaoBackfillerArgs) = new TaoBaoBackfillerPlugin(args)

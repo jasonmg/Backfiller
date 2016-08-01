@@ -1,9 +1,10 @@
-package main.scala.taobao
+package main.scala.taobao.core
 
 import java.io.File
 import java.nio.charset.CodingErrorAction
+
 import main.scala.core.SliceProvider
-import main.scala.model.TaoBaoEntityValidation._
+import main.scala.taobao.model.TaoBaoEntityValidation._
 import main.scala.utils.AutoClose._
 import main.scala.utils.Log
 

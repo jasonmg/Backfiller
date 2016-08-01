@@ -1,9 +1,9 @@
-package main.scala.taobao
+package main.scala.taobao.core
+
+import java.io.File
 
 import main.scala.core.BackfillerArgs
 import org.kohsuke.args4j.{Option => Ops}
-import java.io.File
-import main.scala.core.BackfillerArgsHandler.FileOptionOptionHandler
 
 class TaoBaoBackfillerArgs extends BackfillerArgs {
 

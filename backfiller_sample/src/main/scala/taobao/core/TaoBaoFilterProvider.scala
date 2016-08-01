@@ -1,7 +1,7 @@
-package main.scala.taobao
+package main.scala.taobao.core
 
 import main.scala.core.FilterProvider
-import main.scala.model.TaoBaoEntity
+import main.scala.taobao.model.TaoBaoEntity
 
 class TaoBaoFilterProvider extends FilterProvider[TaoBaoEntity] {
   def filter(args: Seq[TaoBaoEntity]):Seq[TaoBaoEntity] ={
