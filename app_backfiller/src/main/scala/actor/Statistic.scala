@@ -3,6 +3,23 @@ package main.scala.actor
 import akka.actor._
 import com.codahale.metrics.{Clock, MetricRegistry}
 
+
+object Statistic {
+  case object SystemStart
+
+  case object SourceRecord
+  case object SliceRecord
+  case class FilterRecord(originSize: Long, filterSize: Long)
+  case object ConvertRecord
+  case object SinkRecord
+
+  case class RecordInsert(num: Int)
+  case class RecordFlush(time: Long)
+  case object Print
+
+  def props =  Props(new Statistic)
+}
+
 class Statistic extends Actor with ActorLogging {
   import Statistic._
 
@@ -54,17 +71,3 @@ class Statistic extends Actor with ActorLogging {
   }
 }
 
-object Statistic {
-  case object SystemStart
-
-
-  case object SourceRecord
-  case object SliceRecord
-  case class FilterRecord(originSize: Long, filterSize: Long)
-  case object ConvertRecord
-  case object SinkRecord
-
-  case object Print
-
-  def props =  Props(new Statistic)
-}

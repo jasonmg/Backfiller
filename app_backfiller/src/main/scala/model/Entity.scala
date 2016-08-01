@@ -18,6 +18,12 @@ object EntityCollection {
   def apply(ents: Seq[Entity]): EntityCollection =
     new EntityCollection{ val entities = ents }
 
+  def reduce(ecs: Seq[EntityCollection]): EntityCollection ={
+    val ents = ecs.reduce{(a,b)=> new EntityCollection{val entities = a.entities ++ b.entities}}
+    ents
+  }
+
+
 }
 
 

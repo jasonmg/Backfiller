@@ -39,14 +39,15 @@ object Controller {
 /**
   * It's the controller class to coordinate the work flow.
   */
-class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs]) extends Actor with ActorLogging {
+class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs],
+                                                batchSize: Int) extends Actor with ActorLogging {
 
   import Controller._
 
   def actor(props: Props, name: String) = context.watch(context.actorOf(props, name))
 
   val statistic = actor(Statistic.props, "Statistic_actor")
-  val sink = actor(Sink.props(plugin, self, statistic), "Sink_actor")
+  val sink = actor(Sink.props(plugin, batchSize, self, statistic), "Sink_actor")
   val converter = actor(Converter.props(plugin, sink, statistic), "Converter_actor")
   val filter = actor(Filter.props(plugin, converter, statistic), "Filter_actor")
   val source = actor(Source.props(plugin, filter, statistic), "Source_actor")

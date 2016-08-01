@@ -25,7 +25,8 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     val plugin  = pluginCompanion(cmdLine)
 
     val pluginFacade = new BackfillerPluginFacade(plugin)
-    val controller = system.actorOf(Props(new Controller(pluginFacade)), "controller")
+    val bachSize = 3
+    val controller = system.actorOf(Props(new Controller(pluginFacade, bachSize)), "controller")
 
     controller ! AllStart
     system.awaitTermination()
