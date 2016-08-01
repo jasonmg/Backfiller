@@ -1,8 +1,7 @@
 package main.scala.taobao
 
 import main.scala.core.SourceProvider
-import main.scala.model.{Sex, TaoBaoCSV}
-import main.scala.model.TaoBaoEntity
+import main.scala.model._
 
 class TaoBaoSourceProvider extends SourceProvider[TaoBaoEntity, TaoBaoSliceOut] {
 
