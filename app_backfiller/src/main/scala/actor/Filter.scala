@@ -17,7 +17,7 @@ class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: 
     case RequestFilter(args) =>
       val filter = plugin.filterProvider
       val filterRes = filter.filter(args)
-      statistic ! FilterRecord
+      statistic ! FilterRecord(args.size, filterRes.size)
       converter ! RequestConverter(filterRes)
 
     case ShutDown=>

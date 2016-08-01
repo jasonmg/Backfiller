@@ -45,7 +45,6 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
 
   def actor(props: Props, name: String) = context.watch(context.actorOf(props, name))
 
-
   val statistic = actor(Statistic.props, "Statistic_actor")
   val sink = actor(Sink.props(plugin, self, statistic), "Sink_actor")
   val converter = actor(Converter.props(plugin, sink, statistic), "Converter_actor")
@@ -54,6 +53,7 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
   val slice = actor(Slice.props(plugin, self, source, statistic), "Slice_actor")
 
   import scala.concurrent.ExecutionContext.Implicits.global
+  statistic ! Statistic.SystemStart
   context.system.scheduler.schedule(1 millisecond, 1 second, statistic, Statistic.Print)
 
   def receive = {
@@ -103,7 +103,6 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
       log.info("all completed.")
       context.system.shutdown()
   }
-
 
 }
 

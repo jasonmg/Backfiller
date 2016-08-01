@@ -1,16 +1,19 @@
 package main.scala.actor
 
 import akka.actor._
-import com.codahale.metrics.MetricRegistry
+import com.codahale.metrics.{Clock, MetricRegistry}
 
 class Statistic extends Actor with ActorLogging {
   import Statistic._
 
   val registry = new MetricRegistry()
-
   val name = MetricRegistry.name(classOf[Statistic], _: String)
 
+  var systemStartTime = 0L
+  val clock = Clock.defaultClock
 
+  var originSize = 0L
+  var filterSize = 0L
   val sliceMeter = registry.meter(name("slice"))
   val sourceMeter = registry.meter(name("source"))
   val filterMeter = registry.meter(name("filter"))
@@ -19,36 +22,49 @@ class Statistic extends Actor with ActorLogging {
 
   def receive = {
 
-    case SliceRecord=>
+    case SystemStart =>
+      systemStartTime = clock.getTick
+
+    case SliceRecord =>
       sliceMeter.mark()
-    case SourceRecord=>
+
+    case SourceRecord =>
       sourceMeter.mark()
-    case FilterRecord=>
+
+    case FilterRecord(os, fs) =>
+      originSize += os
+      filterSize += fs
       filterMeter.mark()
-    case ConvertRecord=>
+
+    case ConvertRecord =>
       convertMeter.mark()
-    case SinkRecord=>
+
+    case SinkRecord =>
       sinkMeter.mark()
 
     case Print =>
-      log.info("====================================")
-      log.info(s"slice: ${sliceMeter.getCount}")
-      log.info(s"source: ${sourceMeter.getCount}")
-      log.info(s"filter: ${filterMeter.getCount}")
-      log.info(s"convert: ${convertMeter.getCount}")
-      log.info(s"sink: ${sinkMeter.getCount}")
+      val elapsed = clock.getTick - systemStartTime
+      println(s"==========elapsed: $elapsed==========")
+
+      println(s"slice: ${sliceMeter.getCount}, ${sliceMeter.getOneMinuteRate}, ${sliceMeter.getFiveMinuteRate}")
+      println(s"source: ${sourceMeter.getCount}")
+      println(s"filter: ${filterMeter.getCount}")
+      println(s"convert: ${convertMeter.getCount}")
+      println(s"sink: ${sinkMeter.getCount}")
   }
 }
 
 object Statistic {
+  case object SystemStart
+
+
   case object SourceRecord
   case object SliceRecord
-  case object FilterRecord
+  case class FilterRecord(originSize: Long, filterSize: Long)
   case object ConvertRecord
   case object SinkRecord
 
   case object Print
 
   def props =  Props(new Statistic)
-
 }
