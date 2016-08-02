@@ -5,6 +5,16 @@ import main.scala.actor.Controller._
 import main.scala.actor.Converter.RequestConverter
 import main.scala.core.BackfillerPluginFacade
 import main.scala.actor.Statistic._
+import main.scala.model.Phase
+import main.scala.utils.RetryLogic._
+
+object Filter {
+
+  case class RequestFilter(args: Traversable[Any])
+
+  def props(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef) =
+    Props(new Filter(plugin, converter, statistic))
+}
 
 class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef)
   extends Actor with ActorLogging with ReSubmit{
@@ -16,10 +26,13 @@ class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: 
       sender ! StartFilter
 
     case RequestFilter(args) =>
-      val filter = plugin.filterProvider
-      val filterRes = filter.filter(args)
-      statistic ! FilterRecord(args.size, filterRes.size)
-      converter ! RequestConverter(filterRes)
+      val provider = plugin.filterProvider
+      val filterRes = retry(args, provider.filter, Phase.Filter, plugin.exceptionHandler)
+      filterRes.foreach { res =>
+        statistic ! FilterRecord(args.size, res.size)
+        converter ! RequestConverter(res)
+      }
+
 
     case ShutDown=>
       sender ! FilterComplete
@@ -27,10 +40,3 @@ class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: 
   }
 }
 
-object Filter {
-
-  case class RequestFilter(args: Seq[Any])
-
-  def props(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef) =
-    Props(new Filter(plugin, converter, statistic))
-}

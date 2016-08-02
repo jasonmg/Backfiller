@@ -1,30 +1,47 @@
 package main.scala.actor
 
-import java.util
-
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor._
 import main.scala.core.{BackfillerArgs, BackfillerPluginFacade}
 import main.scala.actor.Controller._
 import main.scala.actor.Source.RequestSource
 import main.scala.utils.RetryLogic._
-import scala.collection.JavaConverters._
 import main.scala.actor.Statistic._
+import main.scala.model.Phase
+import scala.collection.mutable
+
+object Slice {
+
+  def props[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, source: ActorRef, statistic: ActorRef) = {
+    Props(new Slice(plugin, controller, source, statistic))
+  }
+
+  case object RequestSlice
+
+  case object AllSliceSent
+}
+
 
 class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, source: ActorRef, statistic: ActorRef)
-  extends Actor with ActorLogging with ReSubmit {
+  extends Actor with ActorLogging {
 
   import Slice._
 
-  val workQueue = new java.util.ArrayDeque[Seq[_]]()
+  val workQueue = new mutable.Queue[Seq[_]]()
 
-  def _receive: Receive = {
+  def receive: Receive = {
     case StartSlice => sender ! StartSlice
 
     case RequestSlice =>
-      val sliceRes = plugin.sliceProvider.slice(plugin.cmdLine)
+      val provider = plugin.sliceProvider
+
+      val sliceRes = retry(plugin.cmdLine, provider.slice, Phase.Slice, plugin.exceptionHandler)
+
       sliceRes foreach { res =>
-        source ! RequestSource(res)
-        statistic ! SliceRecord
+        res.foreach{ r=>
+          source ! RequestSource(r)
+          statistic ! SliceRecord
+        }
+
       }
       controller ! AllSliceSent
       context.become(awaitTerminate)
@@ -39,14 +56,3 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
   }
 }
 
-object Slice {
-
-  def props[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, source: ActorRef, statistic: ActorRef) = {
-    Props(new Slice(plugin, controller, source, statistic))
-  }
-
-  case object RequestSlice
-
-  case object AllSliceSent
-
-}

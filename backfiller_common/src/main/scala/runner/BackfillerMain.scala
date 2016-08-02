@@ -22,7 +22,7 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     val pluginName = cmdLine.pluginName
     val pluginCompanion = createPlugin(pluginName)
 
-    val plugin  = pluginCompanion(cmdLine)
+    val plugin = pluginCompanion(cmdLine)
 
     val pluginFacade = new BackfillerPluginFacade(plugin)
     val bachSize = 3
@@ -38,6 +38,18 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     optionSmoke.foreach { smoke => smoke.persistIntoFile(cmdLine.smokeFile.get, cmdLine.sinkMode) }
 
     plugin.onComplete
+
+    val hasError = plugin.exceptionHandler match {
+      case ex: FailLoggingExceptionHandler =>
+        ex.logExceptionIfRequired()
+        ex.hasExceptionOccur
+      case _ => false
+    }
+
+    if (hasError) {
+      log.error(s"has error occurred during backfiller process, exit with error")
+      System.exit(1)
+    }
   }
 
   def isSmokeTest(plugin: BackfillerPluginFacade[Args]): Option[DefaultSinkProvider] = {

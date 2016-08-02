@@ -6,6 +6,15 @@ import main.scala.actor.Filter.RequestFilter
 import main.scala.core._
 import main.scala.utils.RetryLogic._
 import main.scala.actor.Statistic._
+import main.scala.model.Phase
+
+object Source {
+  def props(plugin: BackfillerPluginFacade[_], filter: ActorRef, statistic: ActorRef) =
+    Props(new Source(plugin, filter, statistic))
+
+  case class RequestSource(sourceArg: Any)
+
+}
 
 /**
   * Source response for read data from diverse resource system
@@ -20,10 +29,10 @@ class Source(plugin: BackfillerPluginFacade[_], filter: ActorRef, statistic: Act
       sender ! StartSource
 
     case RequestSource(arg) =>
-      log.info(s"request source from: ${plugin.getClass.getName}")
-      val res = retry(arg, plugin.sourceProvider.load)
+      val provider = plugin.sourceProvider
+      val res = retry(arg, provider.load, Phase.Source, plugin.exceptionHandler)
       statistic ! SourceRecord
-      filter ! RequestFilter(res.toSeq)
+      res.foreach{ r => filter ! RequestFilter(r)}
 
     case Controller.ShutDown =>
       sender ! SourceComplete
@@ -31,11 +40,3 @@ class Source(plugin: BackfillerPluginFacade[_], filter: ActorRef, statistic: Act
   }
 }
 
-object Source {
-  def props(plugin: BackfillerPluginFacade[_], filter: ActorRef, statistic: ActorRef) =
-    Props(new Source(plugin, filter, statistic))
-
-
-  case class RequestSource(sourceArg: Any)
-
-}

@@ -15,6 +15,7 @@ class BackfillerPluginFacade[Args <: BackfillerArgs](plugin: BackfillerPlugin[An
   private val _sourceProvider = plugin.sourceProvider
   private val _convertProvider = plugin.convertProvider
   private val _filterProvider = plugin.filterProvider
+  private val _exceptionHandler = plugin.exceptionHandler
 
   val cmdLine: Args = plugin.cmdLine
   def sliceProvider = _sliceProvider
@@ -22,5 +23,6 @@ class BackfillerPluginFacade[Args <: BackfillerArgs](plugin: BackfillerPlugin[An
   def convertProvider = _convertProvider
   def sinkProvider = _sinkProvider
   def filterProvider = _filterProvider
+  def exceptionHandler = _exceptionHandler
   def onComplete = plugin.onComplete
 }

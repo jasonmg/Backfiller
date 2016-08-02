@@ -11,6 +11,7 @@ abstract class BackfillerPlugin[In, Args <: BackfillerArgs, SourceArg](val cmdLi
 // this trait should only place common default implement
 trait BackfillerPluginBase {
   val cmdLine: BackfillerArgs
+  def exceptionHandler: ExceptionHandler = new FailLoggingExceptionHandler(cmdLine.failLogFile)
   def onComplete: Unit = {}
   def sinkProvider = new DefaultSinkProvider(cmdLine)
 }

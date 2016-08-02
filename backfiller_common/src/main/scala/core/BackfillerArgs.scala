@@ -7,9 +7,8 @@ import org.kohsuke.args4j
 import org.kohsuke.args4j.{CmdLineParser, OptionDef, OptionHandlerRegistry, Option => Ops}
 import org.kohsuke.args4j.spi.{OneArgumentOptionHandler, Setter}
 import main.scala.core.BackfillerArgsHandler._
+
 class BackfillerArgs {
-
-
 
   @args4j.Option(name = "--plugin", usage = "provider your own FQ plugin name which contains your source|converter|sink logic",
     required = true)
@@ -24,6 +23,13 @@ class BackfillerArgs {
     smokeFile = Some(new File(name))
   }
   var smokeFile: Option[File] = None
+
+  @args4j.Option(name = "--failLogFile", usage = "this is for logging failed information inside actor system",
+    required = false)
+  def setFailLogFile(name:String): Unit ={
+    failLogFile = Some(new File(name))
+  }
+  var failLogFile: Option[File] = None
 
   @args4j.Option(name = "--sinkMode", usage = "smokeFile is for save back fill date into it instead of in database or somewhere else",
     required = false)
