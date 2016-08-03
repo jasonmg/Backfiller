@@ -77,6 +77,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="backfiller_common" />
+    <orderEntry type="module" module-name="daq_common" />
   </component>
 </module>
