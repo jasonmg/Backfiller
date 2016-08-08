@@ -20,34 +20,38 @@ object Slice {
   case object AllSliceSent
 }
 
-
+/** Slice is for split source from multiple chunk, this is because:
+  *  1. for performance concerns
+  *  2. each acotr should take as less task as possible
+  *  3. use multiple cpu parallel
+  */
 class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, source: ActorRef, statistic: ActorRef)
   extends Actor with ActorLogging {
 
   import Slice._
 
-  val workQueue = new mutable.Queue[Seq[_]]()
+  val workQueue = new mutable.Queue[Any]()
 
   def receive: Receive = {
     case StartSlice => sender ! StartSlice
 
     case RequestSlice =>
       val provider = plugin.sliceProvider
-
       val sliceRes = retry(plugin.cmdLine, provider.slice, Phase.Slice, plugin.exceptionHandler)
+      sliceRes foreach workQueue.enqueue
 
-      sliceRes foreach { res =>
-        res.foreach{ r=>
-          source ! RequestSource(r)
-          statistic ! SliceRecord
-        }
-
+      while (workQueue.nonEmpty) {
+        source ! RequestSource(workQueue.dequeue())
+        statistic ! SliceRecord
       }
-      controller ! AllSliceSent
-      context.become(awaitTerminate)
+
+      if (workQueue.isEmpty) {
+        controller ! AllSliceSent
+        context.become(awaitTerminate)
+      }
   }
 
-  def awaitTerminate: Actor.Receive = {
+  def awaitTerminate: Receive = {
     case RequestSlice =>
       log.info(s"wait for terminate, can't accept any request")
     case Controller.ShutDown =>

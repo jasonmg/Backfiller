@@ -11,7 +11,7 @@ trait ExceptionHandler {
   def handle(ex: PluginExcutionException, phase: Phase): Unit
 }
 
-class FailLoggingExceptionHandler(failLoggingFile: Option[File]) extends ExceptionHandler with Log{
+class FailLoggingExceptionHandler(failLoggingFile: Option[File]) extends ExceptionHandler with Log {
 
   private var failedCauseExceedMaxRetries = false
 
@@ -27,14 +27,15 @@ class FailLoggingExceptionHandler(failLoggingFile: Option[File]) extends Excepti
   }
 
   def logExceptionIfRequired(): Unit = {
-    if (failLoggingFile.isDefined) {
-      using(new PrintWriter(failLoggingFile.get)) { pw =>
-        exceptionCache foreach pw.print
+    if (hasExceptionOccur) {
+      if (failLoggingFile.isDefined) {
+        using(new PrintWriter(failLoggingFile.get)) { pw =>
+          exceptionCache foreach pw.print
+        }
+      } else {
+        log.info("failLoggingFile is not defined, print fail info in console")
+        exceptionCache foreach log.info
       }
-    } else {
-      log.info("failLoggingFile is not defined, print fail info in console")
-      exceptionCache foreach log.info
     }
-
   }
 }

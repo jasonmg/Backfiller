@@ -34,6 +34,7 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
     }
 
     using(new PrintWriter(smokeFile)) { printer =>
+      log.info(s"Write to file: $smokeFile")
       printer.write(convert())
     }
   }

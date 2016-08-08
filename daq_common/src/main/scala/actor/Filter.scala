@@ -16,6 +16,8 @@ object Filter {
     Props(new Filter(plugin, converter, statistic))
 }
 
+/** Filter is take care remove duplicate rule.
+  */
 class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef)
   extends Actor with ActorLogging with ReSubmit{
 
@@ -32,7 +34,6 @@ class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: 
         statistic ! FilterRecord(args.size, res.size)
         converter ! RequestConverter(res)
       }
-
 
     case ShutDown=>
       sender ! FilterComplete
