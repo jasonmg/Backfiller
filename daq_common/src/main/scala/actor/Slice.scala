@@ -1,12 +1,15 @@
 package main.scala.actor
 
 import akka.actor._
+import com.codahale.metrics.Clock
 import main.scala.core.{BackfillerArgs, BackfillerPluginFacade}
 import main.scala.actor.Controller._
 import main.scala.actor.Source.RequestSource
 import main.scala.utils.RetryLogic._
 import main.scala.actor.Statistic._
 import main.scala.model.Phase
+import main.scala.utils.TimeUtil._
+
 import scala.collection.mutable
 
 object Slice {
@@ -18,12 +21,13 @@ object Slice {
   case object RequestSlice
 
   case object AllSliceSent
+
 }
 
 /** Slice is for split source from multiple chunk, this is because:
-  *  1. for performance concerns
-  *  2. each acotr should take as less task as possible
-  *  3. use multiple cpu parallel
+  * 1. for performance concerns
+  * 2. each acotr should take as less task as possible
+  * 3. use multiple cpu parallel
   */
 class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLineArgs], controller: ActorRef, source: ActorRef, statistic: ActorRef)
   extends Actor with ActorLogging {
@@ -31,18 +35,22 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
   import Slice._
 
   val workQueue = new mutable.Queue[Any]()
+  val clock = Clock.defaultClock
 
   def receive: Receive = {
     case StartSlice => sender ! StartSlice
 
     case RequestSlice =>
       val provider = plugin.sliceProvider
-      val sliceRes = retry(plugin.cmdLine, provider.slice, Phase.Slice, plugin.exceptionHandler)
-      sliceRes foreach workQueue.enqueue
+      val (time, sliceRes) = timer {
+        retry(plugin.cmdLine, provider.slice, Phase.Slice, plugin.exceptionHandler)
+      }
+      statistic ! RecordSliceTime(time)
 
+      sliceRes foreach workQueue.enqueue
       while (workQueue.nonEmpty) {
         source ! RequestSource(workQueue.dequeue())
-        statistic ! SliceRecord
+        statistic ! RecordSlice
       }
 
       if (workQueue.isEmpty) {

@@ -5,15 +5,14 @@ import main.scala.core.SinkProvider
 import main.scala.model.EntityCollection
 import main.scala.utils.Log
 import scala.collection.mutable.ListBuffer
-
+import main.scala.utils.TimeUtil._
 
 class BatchSink(sinkProvider: SinkProvider, batchSize: Int, status: SinkStatus) extends Log {
 
   var cacheSize = 0
   val batchEle = new ListBuffer[EntityCollection]
-  val clock = Clock.defaultClock()
 
-//    @NotThreadSafe
+  //    @NotThreadSafe
   def insert(ele: EntityCollection): Unit = {
     batchEle += ele
     cacheSize += ele.entities.size
@@ -21,19 +20,19 @@ class BatchSink(sinkProvider: SinkProvider, batchSize: Int, status: SinkStatus) 
       flush()
   }
 
-//  @NotThreadSafe
+  //  @NotThreadSafe
   def flush(): Unit = {
-    val start = clock.getTick
     if (batchEle.nonEmpty) {
-      val batched = EntityCollection.reduce(batchEle)
+      val (time, _) = timer {
+        val batched = EntityCollection.reduce(batchEle)
 
-      sinkProvider.insert(batched)
-      batchEle.clear()
-      cacheSize = 0
+        sinkProvider.insert(batched)
+        batchEle.clear()
+        cacheSize = 0
 
-      status.recordInsert(batched.size)
-      log.info(s"Flush ${batched.size} EntityCollection into DB/File at thread: ${Thread.currentThread().getName}")
-      val time = clock.getTick - start
+        status.recordInsert(batched.size)
+        log.info(s"Flush ${batched.size} EntityCollection into DB/File at thread: ${Thread.currentThread().getName}")
+      }
       status.recordFlush(time)
     } else {
       log.warn(s"non batched object need to flush")

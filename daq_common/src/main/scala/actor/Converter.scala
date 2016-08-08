@@ -7,6 +7,7 @@ import main.scala.core._
 import main.scala.utils.RetryLogic._
 import main.scala.actor.Statistic._
 import main.scala.model.Phase
+import main.scala.utils.TimeUtil._
 
 object Converter {
   def props(plugin: BackfillerPluginFacade[_], sink: ActorRef, statistic: ActorRef) = {
@@ -29,9 +30,11 @@ class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef, statistic: Ac
       sender ! StartConverter
 
     case RequestConverter(arg) =>
-      val res = retry(arg, plugin.convertProvider.convert, Phase.Convert, plugin.exceptionHandler)
-      statistic ! ConvertRecord
-      res.foreach {r=> sink ! RequestSink(r)}
+      val (time, res) = timer{ retry(arg, plugin.convertProvider.convert, Phase.Convert, plugin.exceptionHandler) }
+      statistic ! RecordConvertTime(time)
+
+      res.foreach { r => sink ! RequestSink(r) }
+      statistic ! RecordConvert
 
     case Controller.ShutDown =>
       sender ! ConverterComplete

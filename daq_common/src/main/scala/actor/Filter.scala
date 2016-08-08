@@ -7,6 +7,7 @@ import main.scala.core.BackfillerPluginFacade
 import main.scala.actor.Statistic._
 import main.scala.model.Phase
 import main.scala.utils.RetryLogic._
+import main.scala.utils.TimeUtil._
 
 object Filter {
 
@@ -29,9 +30,11 @@ class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: 
 
     case RequestFilter(args) =>
       val provider = plugin.filterProvider
-      val filterRes = retry(args, provider.filter, Phase.Filter, plugin.exceptionHandler)
+      val (time, filterRes) = timer{ retry(args, provider.filter, Phase.Filter, plugin.exceptionHandler) }
+      statistic ! RecordFilterTime(time)
+
       filterRes.foreach { res =>
-        statistic ! FilterRecord(args.size, res.size)
+        statistic ! RecordFilter(args.size, res.size)
         converter ! RequestConverter(res)
       }
 
