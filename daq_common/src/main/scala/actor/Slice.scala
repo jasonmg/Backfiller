@@ -43,6 +43,7 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
     case RequestSlice =>
       val provider = plugin.sliceProvider
       val (time, sliceRes) = timer {
+        Thread.sleep(5000)
         retry(plugin.cmdLine, provider.slice, Phase.Slice, plugin.exceptionHandler)
       }
       statistic ! RecordSliceTime(time)

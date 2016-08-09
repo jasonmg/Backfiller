@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit
 import akka.actor._
 import com.codahale.metrics.{Clock, Counter, MetricRegistry, Timer}
 import main.scala.actor.Statistic.RecordFilterTime
+import main.scala.model.Table
 
 
 object Statistic {
@@ -33,10 +34,11 @@ object Statistic {
 
   case object Print
 
-  def props =  Props(new Statistic)
+  def props = Props(new Statistic)
 }
 
 class Statistic extends Actor with ActorLogging {
+
   import Statistic._
 
   val registry = new MetricRegistry()
@@ -46,30 +48,30 @@ class Statistic extends Actor with ActorLogging {
   val clock = Clock.defaultClock
 
   val sliceTime = new Timer()
-  registry.register("sliceT", sliceTime)
+  registry.register(name("sliceT"), sliceTime)
   val sliceCount = new Counter()
-  registry.register("sliceC", sliceCount)
+  registry.register(name("sliceC"), sliceCount)
   val sourceTime = new Timer()
-  registry.register("sourceT", sourceTime)
+  registry.register(name("sourceT"), sourceTime)
   val sourceCount = new Counter()
-  registry.register("sourceC", sourceCount)
+  registry.register(name("sourceC"), sourceCount)
 
   val filterTime = new Timer()
-  registry.register("filterT", filterTime)
+  registry.register(name("filterT"), filterTime)
   val filterCountOriginal = new Counter()
-  registry.register("filterCountOriginal", filterCountOriginal)
+  registry.register(name("filterCountOriginal"), filterCountOriginal)
   val filterCountAfter = new Counter()
-  registry.register("filterCountAfter", filterCountAfter)
+  registry.register(name("filterCountAfter"), filterCountAfter)
 
   val convertTime = new Timer()
-  registry.register("convertT", convertTime)
+  registry.register(name("convertT"), convertTime)
   val convertCount = new Counter()
-  registry.register("convertC", convertCount)
+  registry.register(name("convertC"), convertCount)
 
   val flushTime = new Timer()
-  registry.register("flushT", flushTime)
+  registry.register(name("flushT"), flushTime)
   val sinkCount = new Counter()
-  registry.register("sinkC", sinkCount)
+  registry.register(name("sinkC"), sinkCount)
 
   def receive = {
 
@@ -108,10 +110,48 @@ class Statistic extends Actor with ActorLogging {
       sinkCount.inc(num)
 
     case Print =>
-      val elapsed = clock.getTick - systemStartTime
-      println(s"==========elapsed: $elapsed==========")
+      val elapsed = toMillis(clock.getTick - systemStartTime)
+      println(s"========== elapsed so far: $elapsed ==========")
+      val s = sliceTime.getSnapshot
 
+      println(sliceCount.getCount+ " "+ sliceTime.getCount+" "+sliceTime.getMeanRate + " " + sliceTime.getOneMinuteRate+" "
+      + sliceTime.getFiveMinuteRate+" "+ sliceTime.getFifteenMinuteRate + " " + s.get75thPercentile()
+      +" " + s.get95thPercentile() + " " + s.get99thPercentile())
 
   }
+
+  def printTable() = {
+    val sliceParam = PrintParam("slice", sliceTime, sliceCount.getCount, sliceCount.getCount, 0)
+    val sourceParam = PrintParam("source", sourceTime, sourceCount.getCount, sourceCount.getCount, 0)
+    val filterParam = PrintParam("filter", filterTime, filterCountOriginal.getCount, filterCountAfter.getCount, 0)
+    val convertParam = PrintParam("convert", convertTime, convertCount.getCount, convertCount.getCount, 0)
+    val sinkParam = PrintParam("sink", flushTime, sinkCount.getCount, sinkCount.getCount, 0)
+
+    val head = Seq("phase","before","after","failure","MeanRate","OneMinuteRate",
+    "FiveMinuteRate","FifteenMinuteRate","Max","Mean","Min","75thPercentile","95thPercentile","99thPercentile")
+
+    val table = Table(head)
+      .addRow(buildRow(sliceParam))
+      .addRow(buildRow(sourceParam))
+      .addRow(buildRow(filterParam))
+      .addRow(buildRow(convertParam))
+      .addRow(buildRow(sinkParam))
+  }
+
+  def buildRow(param: PrintParam): Seq[String] = {
+    val timer = param.timer
+    val s = timer.getSnapshot
+    val row = Seq(param.phase,param.phaseStart,param.phaseEnd,param.phaseFailure,timer.getMeanRate,timer.getOneMinuteRate,
+      timer.getFiveMinuteRate,timer.getFifteenMinuteRate,s.getMax,s.getMean,s.getMin,s.get75thPercentile(),
+      s.get95thPercentile(),s.get99thPercentile()).map(_.toString)
+
+    row
+  }
+
+  def toMillis(nanoseconds: Long): String = {
+    nanoseconds / 1000 / 1000 +" ms"
+  }
 }
+
+case class PrintParam(phase: String,timer: Timer, phaseStart: Long, phaseEnd: Long, phaseFailure: Long)
 
