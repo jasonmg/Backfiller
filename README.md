@@ -8,3 +8,15 @@ DAQ mainly doing is fetch data from diverse resource , analysis, filter, and con
 * Source system agnostic- can be database, file or whatever system you decides
 * Automatic statistics gathering, which help monitoring parallelism, throughput of the system.
 * __Strong type__ codebase, which compiler will help catch potential error as earlier as possible. 
+
+
+# Statistic output
+```
+phase   before after failure MeanRate           OneMinuteRate FiveMinuteRate FifteenMinuteRate Max     Mean    Min     75thPercentile 95thPercentile 99thPercentile
+======= ====== ===== ======= ================== ============= ============== ================= ======= ======= ======= ============== ============== ==============
+slice   3      3     0       0.1910302038290823 0.0           0.0            0.0               5051 ms 5051 ms 5051 ms 5051 ms        5051 ms        5051 ms       
+source  3      3     0       0.5734798723384484 0.0           0.0            0.0               13 ms   4 ms    0 ms    13 ms          13 ms          13 ms         
+filter  5      2     0       0.5734545521725829 0.0           0.0            0.0               3 ms    1 ms    0 ms    3 ms           3 ms           3 ms          
+convert 3      3     0       0.5734343915187865 0.0           0.0            0.0               7 ms    2 ms    0 ms    7 ms           7 ms           7 ms          
+sink    2      2     0       0.1911368897587238 0.0           0.0            0.0               7 ms    7 ms    7 ms    7 ms           7 ms           7 ms          
+```
