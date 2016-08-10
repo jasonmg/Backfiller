@@ -112,12 +112,7 @@ class Statistic extends Actor with ActorLogging {
     case Print =>
       val elapsed = toMillis(clock.getTick - systemStartTime)
       println(s"========== elapsed so far: $elapsed ==========")
-      val s = sliceTime.getSnapshot
-
-      println(sliceCount.getCount+ " "+ sliceTime.getCount+" "+sliceTime.getMeanRate + " " + sliceTime.getOneMinuteRate+" "
-      + sliceTime.getFiveMinuteRate+" "+ sliceTime.getFifteenMinuteRate + " " + s.get75thPercentile()
-      +" " + s.get95thPercentile() + " " + s.get99thPercentile())
-
+      printTable()
   }
 
   def printTable() = {
@@ -127,8 +122,20 @@ class Statistic extends Actor with ActorLogging {
     val convertParam = PrintParam("convert", convertTime, convertCount.getCount, convertCount.getCount, 0)
     val sinkParam = PrintParam("sink", flushTime, sinkCount.getCount, sinkCount.getCount, 0)
 
-    val head = Seq("phase","before","after","failure","MeanRate","OneMinuteRate",
-    "FiveMinuteRate","FifteenMinuteRate","Max","Mean","Min","75thPercentile","95thPercentile","99thPercentile")
+    val head = Seq("phase",
+      "before",
+      "after",
+      "failure",
+      "MeanRate",
+      "OneMinuteRate",
+      "FiveMinuteRate",
+      "FifteenMinuteRate",
+      "Max",
+      "Mean",
+      "Min",
+      "75thPercentile",
+      "95thPercentile",
+      "99thPercentile")
 
     val table = Table(head)
       .addRow(buildRow(sliceParam))
@@ -136,14 +143,28 @@ class Statistic extends Actor with ActorLogging {
       .addRow(buildRow(filterParam))
       .addRow(buildRow(convertParam))
       .addRow(buildRow(sinkParam))
+      .print()
+
   }
 
   def buildRow(param: PrintParam): Seq[String] = {
     val timer = param.timer
     val s = timer.getSnapshot
-    val row = Seq(param.phase,param.phaseStart,param.phaseEnd,param.phaseFailure,timer.getMeanRate,timer.getOneMinuteRate,
-      timer.getFiveMinuteRate,timer.getFifteenMinuteRate,s.getMax,s.getMean,s.getMin,s.get75thPercentile(),
-      s.get95thPercentile(),s.get99thPercentile()).map(_.toString)
+    val row = Seq(param.phase,
+      param.phaseStart,
+      param.phaseEnd,
+      param.phaseFailure,
+      timer.getMeanRate,
+      timer.getOneMinuteRate,
+      timer.getFiveMinuteRate,
+      timer.getFifteenMinuteRate,
+      toMillis(s.getMax),
+      toMillis(s.getMean.toLong),
+      toMillis(s.getMin),
+      toMillis(s.get75thPercentile().toLong),
+      toMillis(s.get95thPercentile().toLong),
+      toMillis(s.get99thPercentile().toLong)
+    ).map(_.toString)
 
     row
   }
