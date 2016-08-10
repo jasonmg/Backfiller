@@ -1,23 +1,23 @@
 package main.scala.model
 
 import main.scala.utils.Log
-
+import scala.collection.mutable
 import scala.collection.JavaConverters._
 
-class Table(head: Row, rows: Seq[Row] = Seq.empty) extends Log{
+class Table(head: Row, var rows: mutable.Seq[Row] = mutable.Seq.empty) extends Log{
 
   import Table._
 
   def validate(columns: Seq[_]) = assert(columns.size == head.items.size, s"column number doesn't match to head, head: ${head.items.size}, row: ${columns.size} ")
 
-  def addRow(row: Row): Table = {
+  def addRow(row: Row): Unit = {
     validate(row.items)
-    new Table(head, rows :+ row)
+    rows = rows :+ row
   }
 
-  def addRow(row: Seq[String]): Table = {
+  def addRow(row: Seq[String]): Unit = {
     validate(row)
-    addRow(convert(row))
+    addRow(Row(row))
   }
 
   def print(f: String => Unit = println) = {
@@ -39,16 +39,11 @@ class Table(head: Row, rows: Seq[Row] = Seq.empty) extends Log{
     f(splitLineStr)
     bodyStrs foreach f
   }
-
-
 }
 
 object Table {
   def apply(head: Seq[String]) =
-    new Table(convert(head))
-
-  def convert(row: Seq[String]): Row =
-    Row(row)
+    new Table(Row(head))
 
   def rows2Columns(rows: Seq[Row]): Seq[Column] = {
     val head = rows.head

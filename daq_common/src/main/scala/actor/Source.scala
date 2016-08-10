@@ -31,10 +31,15 @@ class Source(plugin: BackfillerPluginFacade[_], filter: ActorRef, statistic: Act
 
     case RequestSource(arg) =>
       val provider = plugin.sourceProvider
-      val (time,res) = timer{ retry(arg, provider.load, Phase.Source, plugin.exceptionHandler) }
+      val (time, res) = timer {
+        retry(arg, provider.load, Phase.Source, plugin.exceptionHandler)
+      }
       statistic ! RecordSourceTime(time)
-      res.foreach{ r => filter ! RequestFilter(r)}
-      statistic ! RecordSource
+
+      res.fold(statistic ! RecordSourceFailure){ r =>
+        filter ! RequestFilter(r)
+        statistic ! RecordSource
+      }
 
     case Controller.ShutDown =>
       sender ! SourceComplete

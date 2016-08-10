@@ -33,8 +33,10 @@ class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef, statistic: Ac
       val (time, res) = timer{ retry(arg, plugin.convertProvider.convert, Phase.Convert, plugin.exceptionHandler) }
       statistic ! RecordConvertTime(time)
 
-      res.foreach { r => sink ! RequestSink(r) }
-      statistic ! RecordConvert
+      res.fold(statistic ! RecordConvertFailure) { r =>
+        sink ! RequestSink(r)
+        statistic ! RecordConvert
+      }
 
     case Controller.ShutDown =>
       sender ! ConverterComplete

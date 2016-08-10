@@ -33,7 +33,7 @@ class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: 
       val (time, filterRes) = timer{ retry(args, provider.filter, Phase.Filter, plugin.exceptionHandler) }
       statistic ! RecordFilterTime(time)
 
-      filterRes.foreach { res =>
+      filterRes.fold(statistic ! RecordFilterFailure){ res =>
         statistic ! RecordFilter(args.size, res.size)
         converter ! RequestConverter(res)
       }

@@ -55,7 +55,7 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
 
   import scala.concurrent.ExecutionContext.Implicits.global
   statistic ! Statistic.SystemStart
-  context.system.scheduler.schedule(1 millisecond, 1 second, statistic, Statistic.Print)
+  context.system.scheduler.schedule(1 minute, 1 minute, statistic, Statistic.Print)
 
   def receive = {
     case AllStart =>
