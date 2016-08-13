@@ -6,7 +6,7 @@ import main.scala.taobao.model.Sex
 
 class TaoBaoSourceProvider extends SourceProvider[TaoBaoEntity, TaoBaoSliceOut] {
 
-  def load(sourceArg: TaoBaoSliceOut): Traversable[TaoBaoEntity] = {
+  def load(sourceArg: TaoBaoSliceOut): Seq[TaoBaoEntity] = {
 
     sourceArg map { line =>
       val columns = line.trim.split(",")

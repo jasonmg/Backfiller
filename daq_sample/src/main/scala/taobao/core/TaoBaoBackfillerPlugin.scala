@@ -15,7 +15,7 @@ class TaoBaoBackfillerPlugin(args: TaoBaoBackfillerArgs) extends BackfillerPlugi
 
   def convertProvider = new TaoBaoConvertProvider()
 
-  def filterProvider = new TaoBaoFilterProvider()
+  override def filterProvider = new TaoBaoFilterProvider()
 
   override def sinkProvider = new TaoBaoSinkProvider(args)
 }

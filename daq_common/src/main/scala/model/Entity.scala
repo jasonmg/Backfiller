@@ -22,8 +22,6 @@ object EntityCollection {
     val ents = ecs.reduce{(a,b)=> new EntityCollection{val entities = a.entities ++ b.entities}}
     ents
   }
-
-
 }
 
 

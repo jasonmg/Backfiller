@@ -14,12 +14,10 @@ object Converter {
     Props(new Converter(plugin, sink, statistic))
   }
 
-  case class RequestConverter(arg: Traversable[Any])
+  case class RequestConverter(arg: Seq[Any])
 }
 
-/**
-  * Converter response for convert source data into desired data type
-  */
+/** Converter response for convert source data into desired data type */
 class Converter(plugin: BackfillerPluginFacade[_], sink: ActorRef, statistic: ActorRef)
   extends Actor with ActorLogging with ReSubmit{
 

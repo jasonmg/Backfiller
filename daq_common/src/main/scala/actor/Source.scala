@@ -17,9 +17,7 @@ object Source {
 
 }
 
-/**
-  * Source response for read data from diverse resource system
-  */
+/** Source response for read data from diverse resource system */
 class Source(plugin: BackfillerPluginFacade[_], filter: ActorRef, statistic: ActorRef)
   extends Actor with ActorLogging with ReSubmit{
 

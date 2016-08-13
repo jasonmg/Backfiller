@@ -11,14 +11,13 @@ import main.scala.utils.TimeUtil._
 
 object Filter {
 
-  case class RequestFilter(args: Traversable[Any])
+  case class RequestFilter(args: Seq[Any])
 
   def props(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef) =
     Props(new Filter(plugin, converter, statistic))
 }
 
-/** Filter is take care remove duplicate rule.
-  */
+/** Filter is take care remove duplicate rule.*/
 class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef)
   extends Actor with ActorLogging with ReSubmit{
 
@@ -30,7 +29,9 @@ class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: 
 
     case RequestFilter(args) =>
       val provider = plugin.filterProvider
-      val (time, filterRes) = timer{ retry(args, provider.filter, Phase.Filter, plugin.exceptionHandler) }
+      val (time, filterRes) = timer {
+        retry(args, provider.filter, Phase.Filter, plugin.exceptionHandler)
+      }
       statistic ! RecordFilterTime(time)
 
       filterRes.fold(statistic ! RecordFilterFailure){ res =>

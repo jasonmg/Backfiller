@@ -21,7 +21,7 @@ class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSlic
     * read whole csv content and slice by [[TaoBaoSliceProvider.sliceWidth]]
     * return seq of content
     */
-  def sliceCSV(file: Option[File]): Seq[Seq[String]] = {
+  def sliceCSV(file: Option[File]): Seq[TaoBaoSliceOut] = {
     require(file.isDefined, "-csvFile is required")
     log.info(s"read csv file: ${file.get}")
 
@@ -32,10 +32,11 @@ class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSlic
       val head = lines.next()
       assert(validate(head), s"invalid csv head: $head")
 
-      lines.grouped(sliceWidth).toList.toSeq
+      // TODO(https://github.com/jasonmg/daq/issues/5), find a elegant way handle Stream Closed error.
+      lines.grouped(sliceWidth).toList
     }
 
-    res
+    res.toSeq
   }
 }
 
