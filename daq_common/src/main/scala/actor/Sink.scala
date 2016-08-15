@@ -38,6 +38,7 @@ class Sink(plugin: BackfillerPluginFacade[_], batchSize: Int, controller: ActorR
 
     case RequestSink(ele) =>
       batchSink.insert(ele)
+      controller ! StartSlice
 
     case Flush =>
       batchSink.flush()

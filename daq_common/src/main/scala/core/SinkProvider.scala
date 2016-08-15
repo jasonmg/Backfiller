@@ -6,7 +6,6 @@ import main.scala.model
 import main.scala.model.Entity
 import main.scala.model.SinkMode._
 import main.scala.utils.AutoClose._
-import main.scala.utils.XMLUtil
 
 import scala.collection.mutable
 

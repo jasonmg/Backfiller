@@ -33,6 +33,8 @@ object Controller {
 
   case object ShutDown
 
+  case class ScheduleShutDown(length: FiniteDuration)
+
 }
 
 
@@ -58,6 +60,10 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
   context.system.scheduler.schedule(1 minute, 1 minute, statistic, Statistic.Print)
 
   def receive = {
+    case msg @ ScheduleShutDown(length) =>
+      log.info(s"start a timer to shutdown system, duration: $length")
+      context.system.scheduler.scheduleOnce(length, slice, msg)
+
     case AllStart =>
       source ! StartSource
       converter ! StartConverter

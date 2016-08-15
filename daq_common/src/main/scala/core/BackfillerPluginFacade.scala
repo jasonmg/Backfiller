@@ -17,6 +17,7 @@ class BackfillerPluginFacade[Args <: BackfillerArgs](plugin: BackfillerPlugin[An
   private val _filterProvider = plugin.filterProvider
   private val _exceptionHandler = plugin.exceptionHandler
 
+  val isContinuous = plugin.isContinuous
   val cmdLine: Args = plugin.cmdLine
   def sliceProvider = _sliceProvider
   def sourceProvider = _sourceProvider

@@ -16,16 +16,24 @@ object ElementReflectUtil {
     res.toSeq
   }
 
+  def getElementName[T: ru.TypeTag](entity: T): Seq[String] =
+    getElementSymbol(entity) map { _.name.decodedName.toString.trim }
+
   def getElementNameType[T: ru.TypeTag](entity: T): Map[String, Type] =
     getElementSymbol(entity) map {s => (s.name.decodedName.toString.trim, s.typeSignature) } toMap
 
-  def getElementValue[T: ru.TypeTag : ClassTag](entity: T, eleName: Seq[String]): Map[String, Any] = {
+  def getElementValue[T: ru.TypeTag : ClassTag](entity: T, eleName: Seq[String]): Seq[Any] = {
     val rm = ru.runtimeMirror(entity.getClass.getClassLoader)
-    val eleTermSymbols = eleName map { ele => (ele, ru.typeOf[T].decl(ru.TermName(ele)).asTerm) }
+    val eleTermSymbols = eleName map { ele => ru.typeOf[T].decl(ru.TermName(ele)).asTerm }
 
     val im = rm.reflect(entity)
-    val res = eleTermSymbols map { case (ele, symbol) => (ele, im.reflectField(symbol).get) }
+    val res = eleTermSymbols map { symbol => im.reflectField(symbol).get }
 
+    res
+  }
+
+  def getElementNameValue[T: ru.TypeTag : ClassTag](entity: T, eleName: Seq[String]): Map[String, Any] = {
+    val res = eleName zip getElementValue(entity, eleName)
     res.toMap
   }
 
@@ -36,7 +44,7 @@ object ElementReflectUtil {
     val entity = entities.head
     val entityNameType = getElementNameType(entity)
     entities map { e =>
-      getElementValue(e, entityNameType.keySet.toSeq) map {
+      getElementNameValue(e, entityNameType.keySet.toSeq) map {
         case (ele, value) => (ele, (entityNameType(ele), value))
       }
     }
@@ -66,12 +74,10 @@ object ElementReflectUtil {
 
   def toCSV[T: ru.TypeTag : ClassTag](entities: Seq[T]): Seq[String] = {
     val res = if (entities.nonEmpty) {
-      val eleNameTpe = getElementNameType(entities.head)
-      val eleName = eleNameTpe.keySet.toSeq
+      val eleName = getElementName(entities.head)
       val headStr = eleName.mkString(",")
-      val values = entities map {entity =>
-        val eleNameValue = getElementValue(entity,eleName)
-        val eleValue = eleNameValue.values.toSeq
+      val values = entities map { entity =>
+        val eleValue = getElementValue(entity, eleName)
         eleValue.mkString(",")
       }
 

@@ -1,11 +1,16 @@
 package main.scala.runner
 
+import java.util.concurrent.TimeUnit
+
 import akka.actor.{ActorSystem, Props}
 import main.scala.actor.Controller
 import main.scala.actor.Controller._
 import main.scala.core._
 import main.scala.utils.{CmdLineParserBase, magic}
 import main.scala.core.BackfillerArgsHandler
+import main.scala.core.continuous.BackfillerContinuousArgs
+
+import scala.concurrent.duration.FiniteDuration
 import scala.reflect.internal.MissingRequirementError
 
 abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultTo[Args, BackfillerArgs], val manifest: Manifest[Args]) extends CmdLineParserBase[Args] {
@@ -29,6 +34,13 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     val controller = system.actorOf(Props(new Controller(pluginFacade, bachSize)), "controller")
 
     controller ! AllStart
+
+    if(pluginFacade.isContinuous && cmdLine.isInstanceOf[BackfillerContinuousArgs]){
+      val args = cmdLine.asInstanceOf[BackfillerContinuousArgs]
+      val duration = args.duration.getOrElse(FiniteDuration(30, TimeUnit.SECONDS))
+      controller ! ScheduleShutDown(duration)
+    }
+
     system.awaitTermination()
     onTerminate(pluginFacade)
   }

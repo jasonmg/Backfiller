@@ -12,7 +12,7 @@ class ElementReflectUtilTest  extends FlatSpec with Matchers {
   "ElementReflectUtil" should "able extract instance value" in {
     val foo = new Foo("test", 28)
 
-    val res = u.getElementValue(foo, Seq("name", "age"))
+    val res = u.getElementNameValue(foo, Seq("name", "age"))
 
     res should have size 2
     res should (contain key "name" and contain value "test")

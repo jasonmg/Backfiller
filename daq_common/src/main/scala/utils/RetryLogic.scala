@@ -3,7 +3,7 @@ package main.scala.utils
 import main.scala.core.ExceptionHandler
 import main.scala.model.Phase.Phase
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
 
 
@@ -33,10 +33,14 @@ object RetryLogic extends Log {
     retry(None, (x: Option[Any]) => f, phase, exceptionHandler, tried, maxRetry, interval)
   }
 
-  def tryOnce[Out](f: => Out): Out = {
-    f
-  }
-
+  def tryOpOnce[R1, R2](f: => R1, phase: Phase, exceptionHandler: ExceptionHandler)(success: R1 => R2): Try[R2] =
+    Try(f) match {
+      case Success(v) =>
+        Success(success(v))
+      case Failure(ex) =>
+        exceptionHandler.handle(PluginExcutionException(ex, 1, 1), phase)
+        Failure(ex)
+    }
 }
 
 case class PluginExcutionException(cause: Throwable, tried: Int, maxRetry: Int) extends Exception(s"Attempt: $tried of $maxRetry", cause)
