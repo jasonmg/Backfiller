@@ -51,7 +51,7 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
   val statistic = actor(Statistic.props, "Statistic_actor")
   val sink = actor(Sink.props(plugin, batchSize, self, statistic), "Sink_actor")
   val converter = actor(Converter.props(plugin, sink, statistic), "Converter_actor")
-  val filter = actor(Filter.props(plugin, converter, statistic), "Filter_actor")
+  val filter = actor(Filter.props(plugin, self, converter, statistic), "Filter_actor")
   val source = actor(Source.props(plugin, filter, statistic), "Source_actor")
   val slice = actor(Slice.props(plugin, self, source, statistic), "Slice_actor")
 

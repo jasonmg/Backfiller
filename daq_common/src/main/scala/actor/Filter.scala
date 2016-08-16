@@ -13,12 +13,12 @@ object Filter {
 
   case class RequestFilter(args: Seq[Any])
 
-  def props(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef) =
-    Props(new Filter(plugin, converter, statistic))
+  def props(plugin: BackfillerPluginFacade[_], controller: ActorRef, converter: ActorRef, statistic: ActorRef) =
+    Props(new Filter(plugin, controller, converter, statistic))
 }
 
 /** Filter is take care remove duplicate rule.*/
-class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: ActorRef)
+class Filter(plugin: BackfillerPluginFacade[_], controller: ActorRef, converter: ActorRef, statistic: ActorRef)
   extends Actor with ActorLogging with ReSubmit{
 
   import Filter._
@@ -36,7 +36,11 @@ class Filter(plugin: BackfillerPluginFacade[_], converter: ActorRef, statistic: 
 
       filterRes.fold(statistic ! RecordFilterFailure){ res =>
         statistic ! RecordFilter(args.size, res.size)
-        converter ! RequestConverter(res)
+        if(res.nonEmpty) converter ! RequestConverter(res)
+        else {
+          log.debug("after filter, the size is empty, request slice again")
+          controller ! StartSlice
+        }
       }
 
     case ShutDown=>

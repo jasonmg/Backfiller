@@ -41,5 +41,5 @@ class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSlic
 }
 
 object TaoBaoSliceProvider {
-  val sliceWidth = 2
+  val sliceWidth = 50
 }

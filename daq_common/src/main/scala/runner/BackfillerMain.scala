@@ -30,7 +30,7 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     val plugin = pluginCompanion(cmdLine)
 
     val pluginFacade = new BackfillerPluginFacade(plugin)
-    val bachSize = 3
+    val bachSize = 50
     val controller = system.actorOf(Props(new Controller(pluginFacade, bachSize)), "controller")
 
     controller ! AllStart

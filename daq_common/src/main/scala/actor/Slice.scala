@@ -46,6 +46,7 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
       stop()
 
     case RequestSlice =>
+      log.debug(s"request slice, workQueue size is: ${workQueue.size}")
       val provider = plugin.sliceProvider
       // enqueueFn is for turn enqueue signature (A*) => Unit to (Seq[A]) => Unit
       // enqueue(_) signature is (Any) => Unit, Be careful scala Currying.

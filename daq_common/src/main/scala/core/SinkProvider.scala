@@ -34,6 +34,7 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
 
     using(new PrintWriter(smokeFile)) { printer =>
       log.info(s"Write to file: $smokeFile")
+      // TODO(https://github.com/jasonmg/daq/issues/8), this need to optimize, if cached size over 30M, performance is terrible.
       printer.write(convert())
     }
   }
