@@ -3,6 +3,7 @@ package main.scala.runner
 import java.util.concurrent.TimeUnit
 
 import akka.actor.{ActorSystem, Props}
+import com.typesafe.config.ConfigFactory
 import main.scala.actor.Controller
 import main.scala.actor.Controller._
 import main.scala.core._
@@ -22,7 +23,8 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
   }
 
   def start: Unit = {
-    val system = ActorSystem("BackfillerSystem")
+    val config = ConfigFactory.load()
+    val system = ActorSystem("BackfillerSystem", config)
 
     val pluginName = cmdLine.pluginName
     val pluginCompanion = createPlugin(pluginName)
