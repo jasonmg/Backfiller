@@ -1,6 +1,6 @@
 package main.scala.core
 
-import java.io.{File, FileWriter, PrintWriter}
+import java.io.{File, FileWriter}
 
 import main.scala.model
 import main.scala.model.Entity
@@ -26,8 +26,8 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
 
   def persistIntoFile(smokeFile: File, mode: SinkMode): Unit = {
     def convert(): Seq[String] = mode match {
-      case JSON => "[" +: toJSONOutput(cache) :+ "]"
-      case XML => "<root>" +: toXMLOutput(cache) :+ "</root>"
+      case JSON => toJSONOutput(cache)
+      case XML => toXMLOutput(cache)
       case CSV => toCSVOutput(cache)
       case _ => throw new IllegalArgumentException(s"unsupported sink mode: $mode")
     }

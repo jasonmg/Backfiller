@@ -66,7 +66,7 @@ object ElementReflectUtil {
       }
     } else Seq("null")
 
-    res
+    "<root>" +: res :+ "</root>"
   }
 
   def toCSV[T: ru.TypeTag : ClassTag](entities: Seq[T]): Seq[String] = {
@@ -81,7 +81,7 @@ object ElementReflectUtil {
       values.+:(headStr)
     } else Seq("Null")
 
-    res
+    "[" +: res :+ "]"
   }
 
 }
