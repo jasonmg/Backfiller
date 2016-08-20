@@ -1,9 +1,7 @@
 package main.scala.runner
 
 import java.util.concurrent.TimeUnit
-
 import akka.actor.{ActorSystem, Props}
-import com.typesafe.config.ConfigFactory
 import main.scala.actor.Controller
 import main.scala.actor.Controller._
 import main.scala.core._
@@ -64,7 +62,7 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     }
 
     if (hasError) {
-      log.error(s"has error occurred during backfiller process, exit with error")
+      log.error(s"has error occurred during backfiller process, exit with error!")
       System.exit(1)
     }
   }

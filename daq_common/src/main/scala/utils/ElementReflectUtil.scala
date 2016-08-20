@@ -4,9 +4,8 @@ import scala.reflect.ClassTag
 import scala.reflect.runtime.{universe => ru}
 import scala.reflect.runtime.universe._
 
-
+/** use scala reflection to extract object's filed name, type and values */
 object ElementReflectUtil {
-
 
   def getElementSymbol[T: ru.TypeTag](entity: T): Seq[Symbol] = {
     val theType = ru.typeTag[T].tpe

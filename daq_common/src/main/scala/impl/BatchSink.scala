@@ -29,11 +29,11 @@ class BatchSink(sinkProvider: SinkProvider, batchSize: Int, status: SinkStatus) 
         cacheSize = 0
 
         status.recordInsert(batched.size)
-        log.info(s"Flush ${batched.size} EntityCollection into DB/File at thread: ${Thread.currentThread().getName}")
+        log.info(s"Flush ${batched.size} EntityCollection, at thread: ${Thread.currentThread().getName}")
       }
       status.recordFlush(time)
     } else {
-      log.warn(s"non batched object need to flush")
+      log.warn(s"no batched object need to flush")
       status.recordFlush(0)
     }
   }

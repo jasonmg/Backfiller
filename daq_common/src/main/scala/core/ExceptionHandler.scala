@@ -33,7 +33,7 @@ class FailLoggingExceptionHandler(failLoggingFile: Option[File]) extends Excepti
           exceptionCache foreach pw.print
         }
       } else {
-        log.info("failLoggingFile is not defined, print fail info in console")
+        log.info("failLoggingFile is not defined, print fail info into console")
         exceptionCache foreach log.info
       }
     }

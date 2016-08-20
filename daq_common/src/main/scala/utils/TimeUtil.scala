@@ -16,16 +16,37 @@ object TimeUtil {
   def readableTime = ReadableTime.nano2Millis _
 
   object ReadableTime {
-    // we should provide better time format than this now.
-    // given extra precision on the result, e.g. if we want precision to Second level
-    // then for the case which time is less than 1 second, we should auto extend precision to millisecond, i.e. 0.013 s,
-    // others great than 1 second, should keep it normal. i.e. 3 s.
+    import main.scala.utils.StrUtil._
+
+    implicit class nano(nanoSeconds: Long){
+      def toMicos =  nanoSeconds / 1000
+      def toMillis = toMicos / 1000
+      def toSeconds = toMillis / 1000
+      def toMinutes = toSeconds / 60
+    }
+
+    implicit def long2Str(l: Long) = l.toString
+
     def nano2Millis(nanoSeconds: Long): String = {
-      nanoSeconds / 1000 / 1000 +" ms"
+      val s = nanoSeconds.toMillis
+      val res = {
+        if (s != 0) readableFormat(s)
+        else {
+          "0." + padding(nanoSeconds.toMicos % 1000)
+        }
+      } + " ms"
+      res
     }
 
     def nano2Seconds(nanoSeconds: Long): String = {
-      nanoSeconds / 1000 / 1000 / 1000 + " s"
+      val s = nanoSeconds.toSeconds
+      val res = {
+        if (s != 0) readableFormat(s)
+        else {
+          "0." + padding(nanoSeconds.toMillis % 1000)
+        }
+      } + " s"
+      res
     }
   }
 
