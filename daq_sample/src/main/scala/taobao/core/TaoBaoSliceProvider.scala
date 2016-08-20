@@ -32,8 +32,9 @@ class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSlic
       val head = lines.next()
       assert(validate(head), s"invalid csv head: $head")
 
-      // TODO(https://github.com/jasonmg/daq/issues/5), find a elegant way handle Stream Closed error.
-      lines.grouped(sliceWidth).toList
+      val res = lines.grouped(sliceWidth).toList
+      log.info(s"slicer group by: $sliceWidth, grouped size: ${res.size}")
+      res
     }
 
     res.toSeq

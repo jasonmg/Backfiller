@@ -122,14 +122,16 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
 
     case Terminated(deadActor: ActorRef) => context.children match {
       case Child(stat) if(stat eq statistic) =>
-        statistic ! Statistic.Print
+        log.info("only statistic alive, final print before exit")
+        statistic ! Statistic.Print(true)
+      case Child() =>
+        log.info("all children terminated, shutdown system!")
         self ! AllComplete
-      case Child() => log.error("this is should not happend right now.")//self ! AllComplete
+
       case _ => log.info(s"Actor: $deadActor terminated, remain active actor are: ${context.children}")
     }
 
     case AllComplete =>
-      log.info("all completed. shutdown system")
       context.system.shutdown()
   }
 

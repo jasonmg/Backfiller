@@ -10,7 +10,6 @@ import main.scala.core._
 import main.scala.utils.{CmdLineParserBase, magic}
 import main.scala.core.BackfillerArgsHandler
 import main.scala.core.continuous.BackfillerContinuousArgs
-
 import scala.concurrent.duration.FiniteDuration
 import scala.reflect.internal.MissingRequirementError
 import main.scala.utils.ConfigUtil.config
@@ -31,7 +30,6 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     val pluginCompanion = createPlugin(pluginName)
 
     val plugin = pluginCompanion(cmdLine)
-
     val pluginFacade = new BackfillerPluginFacade(plugin)
 
     val backfillerConfig = config.getConfig("backfiller-plugin")
@@ -42,8 +40,10 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
 
     if(pluginFacade.isContinuous && cmdLine.isInstanceOf[BackfillerContinuousArgs]){
       val args = cmdLine.asInstanceOf[BackfillerContinuousArgs]
-      val duration = args.duration.getOrElse(FiniteDuration(30, TimeUnit.SECONDS))
+      val length = backfillerConfig.getInt("duration")
+      val duration = args.duration.getOrElse(FiniteDuration(length, TimeUnit.SECONDS))
       controller ! ScheduleShutDown(duration)
+      log.info(s"set run time limit: $duration")
     }
 
     system.awaitTermination()

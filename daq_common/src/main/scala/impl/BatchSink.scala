@@ -1,6 +1,5 @@
 package main.scala.impl
 
-import com.codahale.metrics.Clock
 import main.scala.core.SinkProvider
 import main.scala.model.EntityCollection
 import main.scala.utils.Log
@@ -12,16 +11,15 @@ class BatchSink(sinkProvider: SinkProvider, batchSize: Int, status: SinkStatus) 
   var cacheSize = 0
   val batchEle = new ListBuffer[EntityCollection]
 
-  //    @NotThreadSafe
-  def insert(ele: EntityCollection): Unit = {
+  // synchronized because there have multiple sink routee running in the pool.
+  def insert(ele: EntityCollection): Unit = synchronized {
     batchEle += ele
     cacheSize += ele.entities.size
     if (cacheSize >= batchSize)
       flush()
   }
 
-  //  @NotThreadSafe
-  def flush(): Unit = {
+  def flush(): Unit = synchronized {
     if (batchEle.nonEmpty) {
       val (time, _) = timer {
         val batched = EntityCollection.reduce(batchEle)

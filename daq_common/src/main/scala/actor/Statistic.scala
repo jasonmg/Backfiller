@@ -29,7 +29,7 @@ object Statistic {
   case class RecordInsert(num: Int)
   case class RecordFlush(time: Long)
 
-  case object Print
+  case class Print(shutDown: Boolean = false)
 
   def props = Props(new Statistic)
 }
@@ -122,10 +122,11 @@ class Statistic extends Actor with ActorLogging {
     case RecordInsert(num) =>
       sinkCount.inc(num)
 
-    case Print =>
+    case Print(shutDown) =>
       val elapsed = readableTime(clock.getTick - systemStartTime)
       println(s">>>>>>>>>>>>>>>  elapsed so far: $elapsed ")
       printTable()
+      if(shutDown) context.stop(self)
   }
 
   def printTable() = {

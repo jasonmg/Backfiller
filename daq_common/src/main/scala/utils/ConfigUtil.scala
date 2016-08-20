@@ -4,6 +4,6 @@ import com.typesafe.config.ConfigFactory
 
 object ConfigUtil extends App{
 
-  val config = ConfigFactory.load()
+ lazy val config = ConfigFactory.load()
 
 }
