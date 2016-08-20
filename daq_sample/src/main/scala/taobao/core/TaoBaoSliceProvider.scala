@@ -41,5 +41,6 @@ class TaoBaoSliceProvider extends SliceProvider[TaoBaoBackfillerArgs, TaoBaoSlic
 }
 
 object TaoBaoSliceProvider {
-  val sliceWidth = 50
+  import main.scala.utils.ConfigUtil.config
+  val sliceWidth = config.getConfig("backfiller-plugin").getInt("slicer-size")
 }

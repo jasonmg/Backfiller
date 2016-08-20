@@ -13,17 +13,18 @@ import main.scala.core.continuous.BackfillerContinuousArgs
 
 import scala.concurrent.duration.FiniteDuration
 import scala.reflect.internal.MissingRequirementError
+import main.scala.utils.ConfigUtil.config
 
 abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultTo[Args, BackfillerArgs], val manifest: Manifest[Args]) extends CmdLineParserBase[Args] {
 
   override def main(args: Array[String]): Unit = {
     BackfillerArgsHandler.setup()
     super.main(args)
-    start
+    start()
   }
 
-  def start: Unit = {
-    val config = ConfigFactory.load()
+  def start(): Unit = {
+
     val system = ActorSystem("BackfillerSystem", config)
 
     val pluginName = cmdLine.pluginName
@@ -32,8 +33,10 @@ abstract class BackfillerMain[Args <: BackfillerArgs](implicit e: magic.DefaultT
     val plugin = pluginCompanion(cmdLine)
 
     val pluginFacade = new BackfillerPluginFacade(plugin)
-    val bachSize = 50
-    val controller = system.actorOf(Props(new Controller(pluginFacade, bachSize)), "controller")
+
+    val backfillerConfig = config.getConfig("backfiller-plugin")
+    val batchSize = backfillerConfig.getInt("batch-insert-size")
+    val controller = system.actorOf(Props(new Controller(pluginFacade, batchSize)), "controller")
 
     controller ! AllStart
 

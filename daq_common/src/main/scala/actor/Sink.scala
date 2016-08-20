@@ -27,7 +27,7 @@ class Sink(plugin: BackfillerPluginFacade[_], batchSize: Int, controller: ActorR
 
   import Sink._
 
-  val batchSink = new BatchSink(plugin.sinkProvider,batchSize, new SinkStatus{
+  val batchSink = new BatchSink(plugin.sinkProvider, batchSize, new SinkStatus {
     def recordInsert(num: Int) = statistic ! RecordInsert(num)
     def recordFlush(time: Long) = statistic ! RecordFlush(time)
   })
