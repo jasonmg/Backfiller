@@ -40,7 +40,7 @@ class ElementReflectUtilTest  extends FlatSpec with Matchers {
     val foo1 = new Foo("test1", 29)
 
     val res = u.toXML(Seq(foo,foo1))
-    val resX = XML.loadString(res)
+    val resX = XML.loadString(res.mkString)
     val foos = resX \\ "Foo"
 
     foos.size should be (2)

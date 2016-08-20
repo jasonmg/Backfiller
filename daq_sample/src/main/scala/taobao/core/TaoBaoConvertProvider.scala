@@ -7,6 +7,7 @@ import main.scala.taobao.model.TaoBaoEntity
 
 class TaoBaoConvertProvider extends ConvertProvider[TaoBaoEntity] {
 
-  def convert(source: Seq[TaoBaoEntity]): EntityCollection =
+  def convert(source: Seq[TaoBaoEntity]): EntityCollection ={
     EntityCollection(source)
+  }
 }

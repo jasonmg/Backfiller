@@ -24,7 +24,7 @@ class TaoBaoContinuousConvertProvider extends ConvertProvider[TaoBaoEntity]{
 
 class TaoBaoContinuousSinkProvider(args: BackfillerContinuousArgs) extends DefaultSinkProvider(args){
   type EntityTpe = TaoBaoEntity
-  override def toCSVOutput(entities: Seq[TaoBaoEntity]): String = ElementReflectUtil.toCSV(entities) mkString("\n")
+  override def toCSVOutput(entities: Seq[TaoBaoEntity]): Seq[String] = ElementReflectUtil.toCSV(entities)
 }
 
 

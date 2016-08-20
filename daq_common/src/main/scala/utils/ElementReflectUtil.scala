@@ -50,24 +50,21 @@ object ElementReflectUtil {
     }
   }
 
-  def toXML[T: ru.TypeTag : ClassTag](entities: Seq[T]): String = {
+  def toXML[T: ru.TypeTag : ClassTag](entities: Seq[T]): Seq[String] = {
     val res = if (entities.nonEmpty) {
       val eleNValues = getElementTpeValue(entities)
       val runTimeClassName = getRunTimeClassName(entities.head)
-      val sb = new StringBuffer(100)
 
-      sb.append("<root>")
       eleNValues map { eleNValue =>
+        val sb = new StringBuffer(100)
         sb.append(s"<$runTimeClassName>")
         eleNValue map {
           case (tag, (tpe, value)) => sb.append(s"""<$tag tpe="$tpe">$value</$tag>""")
         }
         sb.append(s"</$runTimeClassName>")
+        sb.toString
       }
-      sb.append("</root>")
-
-      sb.toString
-    } else "<root></root>"
+    } else Seq("null")
 
     res
   }

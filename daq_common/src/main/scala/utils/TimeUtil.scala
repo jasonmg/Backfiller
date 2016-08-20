@@ -13,4 +13,17 @@ object TimeUtil {
     (stop - start, res)
   }
 
+  def readableTime = ReadableTime.nano2Millis _
+
+  object ReadableTime {
+
+    def nano2Millis(nanoSeconds: Long): String = {
+      nanoSeconds / 1000 / 1000 +" ms"
+    }
+
+    def nano2Seconds(nanoSeconds: Long): String = {
+      nanoSeconds / 1000 / 1000 / 1000 + " s"
+    }
+  }
+
 }

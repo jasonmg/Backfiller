@@ -52,13 +52,13 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
 
   def actor(props: Props, name: String) = context.watch(context.actorOf(props, name))
 
-  val sourceRouter = RoundRobinPool(4)
+  val router = RoundRobinPool
 
   val statistic = actor(Statistic.props, "Statistic_actor")
-  val sink = actor(Sink.props(plugin, batchSize, self, statistic), "Sink_actor")
-  val converter = actor(Converter.props(plugin, sink, statistic), "Converter_actor")
-  val filter = actor(Filter.props(plugin, self, converter, statistic), "Filter_actor")
-  val source = actor(Source.props(plugin, filter, statistic).withDispatcher("source-dispatcher").withRouter(sourceRouter), "Source_actor")
+  val sink = actor(Sink.props(plugin, batchSize, self, statistic).withDispatcher("sink-dispatcher").withRouter(router(4)), "Sink_actor")
+  val converter = actor(Converter.props(plugin, sink, statistic).withDispatcher("converter-dispatcher").withRouter(router(4)), "Converter_actor")
+  val filter = actor(Filter.props(plugin, self, converter, statistic).withDispatcher("filter-dispatcher").withRouter(router(4)), "Filter_actor")
+  val source = actor(Source.props(plugin, filter, statistic).withDispatcher("source-dispatcher").withRouter(router(4)), "Source_actor")
   val slice = actor(Slice.props(plugin, self, source, statistic), "Slice_actor")
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -77,9 +77,9 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
 
     case AllStart =>
       source ! Broadcast(StartSource)
-      converter ! StartConverter
-      filter ! StartFilter
-      sink ! StartSink
+      converter ! Broadcast(StartConverter)
+      filter ! Broadcast(StartFilter)
+      sink ! Broadcast(StartSink)
       slice ! StartSlice
 
     case StartSlice =>
@@ -94,28 +94,34 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
 
     case SourceComplete =>
       val active = source_active.decrementAndGet()
-      log.info(s"complete source actor, remain active: ${active}")
-      if(active == 0) filter ! ShutDown
+      log.info(s"complete source actor, remaining active: ${active}")
+      if(active == 0) filter ! Broadcast(ShutDown)
 
     case FilterComplete =>
-      converter ! ShutDown
+      val active = filter_active.decrementAndGet()
+      log.info(s"complete filter actor, remaining active: ${active}")
+      if(active == 0) converter ! Broadcast(ShutDown)
 
     case ConverterComplete =>
-      sink ! ShutDown
+      val active = converter_active.decrementAndGet()
+      log.info(s"complete converter actor, remaining active: ${active}")
+      if(active == 0) sink ! Broadcast(ShutDown)
 
     case SinkComplete =>
-      log.info(s"sink succeed")
+      val active = sink_active.decrementAndGet()
+      log.info(s"complete sink actor, remaining active: ${active}")
 
-    case StartConverter => log.info("start converter done")
-    case StartSink => log.info("start sink done")
+    case StartConverter =>
+      log.info(s"start converter actor, active: ${converter_active.incrementAndGet()}")
+    case StartSink =>
+      log.info(s"start sink actor, active: ${sink_active.incrementAndGet()}")
     case StartSource =>
-      val active = source_active.incrementAndGet()
-      log.info(s"start source actor, active num: ${active}")
-
-    case StartFilter => log.info("start filter done")
+      log.info(s"start source actor, active: ${source_active.incrementAndGet()}")
+    case StartFilter =>
+      log.info(s"start filter actor, active: ${filter_active.incrementAndGet()}")
 
     case Terminated(deadActor: ActorRef) => context.children match {
-      case Child(stat) if(stat == statistic) =>
+      case Child(stat) if(stat eq statistic) =>
         statistic ! Statistic.Print
         self ! AllComplete
       case Child() => log.error("this is should not happend right now.")//self ! AllComplete
@@ -123,7 +129,7 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
     }
 
     case AllComplete =>
-      log.info("all completed.")
+      log.info("all completed. shutdown system")
       context.system.shutdown()
   }
 

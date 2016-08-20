@@ -4,9 +4,8 @@ import java.util.concurrent.TimeUnit
 
 import akka.actor._
 import com.codahale.metrics.{Clock, Counter, MetricRegistry, Timer}
-import main.scala.actor.Statistic.{RecordFilterTime, RecordSourceFailure}
 import main.scala.model.Table
-
+import main.scala.utils.TimeUtil._
 
 object Statistic {
 
@@ -124,7 +123,7 @@ class Statistic extends Actor with ActorLogging {
       sinkCount.inc(num)
 
     case Print =>
-      val elapsed = toMillis(clock.getTick - systemStartTime)
+      val elapsed = readableTime(clock.getTick - systemStartTime)
       println(s">>>>>>>>>>>>>>>  elapsed so far: $elapsed ")
       printTable()
   }
@@ -170,22 +169,20 @@ class Statistic extends Actor with ActorLogging {
         timer.getOneMinuteRate,
         timer.getFiveMinuteRate,
         timer.getFifteenMinuteRate,
-        toMillis(s.getMax),
-        toMillis(s.getMean.toLong),
-        toMillis(s.getMin),
-        toMillis(s.get75thPercentile().toLong),
-        toMillis(s.get95thPercentile().toLong),
-        toMillis(s.get98thPercentile().toLong),
-        toMillis(s.get99thPercentile().toLong)
+        readableTime(s.getMax),
+        readableTime(s.getMean.toLong),
+        readableTime(s.getMin),
+        readableTime(s.get75thPercentile().toLong),
+        readableTime(s.get95thPercentile().toLong),
+        readableTime(s.get98thPercentile().toLong),
+        readableTime(s.get99thPercentile().toLong)
       ).map(_.toString))
     })
 
     table
   }
 
-  def toMillis(nanoseconds: Long): String = {
-    nanoseconds / 1000 / 1000 +" ms"
-  }
+
 }
 
 case class PrintParam(phase: String, timer: Timer, phaseStart: Long, phaseEnd: Long, phaseFailure: Long)
