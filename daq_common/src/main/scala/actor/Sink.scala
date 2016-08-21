@@ -1,9 +1,10 @@
 package main.scala.actor
 
 import akka.actor._
-import main.scala.actor.Controller._
+import main.scala.actor.Controller.{StartSlice, _}
+import main.scala.actor.Slice.RequestSlice
 import main.scala.core._
-import main.scala.model.EntityCollection
+import main.scala.model.{EntityCollection, Phase}
 import main.scala.utils.RetryLogic._
 import main.scala.actor.Statistic._
 import main.scala.impl.{BatchSink, SinkStatus}
@@ -38,7 +39,7 @@ class Sink(plugin: BackfillerPluginFacade[_], batchSize: Int, controller: ActorR
 
     case RequestSink(ele) =>
       batchSink.insert(ele)
-      controller ! StartSlice
+      controller ! RequestSlice(Phase.Sink)
 
     case Flush =>
       batchSink.flush()

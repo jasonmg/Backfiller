@@ -8,6 +8,7 @@ import main.scala.actor.Source.RequestSource
 import main.scala.utils.RetryLogic._
 import main.scala.actor.Statistic._
 import main.scala.model.Phase
+import main.scala.model.Phase.Phase
 import main.scala.utils.TimeUtil._
 
 import scala.collection.mutable
@@ -18,7 +19,7 @@ object Slice {
     Props(new Slice(plugin, controller, source, statistic))
   }
 
-  case object RequestSlice
+  case class RequestSlice(from: Phase = Phase.Slice)
 
   case object AllSliceSent
 
@@ -39,14 +40,14 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
   var sliced = false
 
   def receive: Receive = {
-    case StartSlice => sender ! StartSlice
+    case StartSlice => sender ! RequestSlice(Phase.Slice)
 
     case ScheduleShutDown(length) =>
       log.info(s"receive ScheduleShutDown message after run: $length, shutdown slice actor")
       stop()
 
-    case RequestSlice =>
-      log.debug(s"request slice, workQueue size is: ${workQueue.size}")
+    case RequestSlice(_) =>
+      log.info(s"request slice, workQueue size is: ${workQueue.size}")
       val provider = plugin.sliceProvider
       // enqueueFn is for turn enqueue signature (A*) => Unit to (Seq[A]) => Unit
       // enqueue(_) signature is (Any) => Unit, Be careful scala Currying.
@@ -83,7 +84,7 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
   }
 
   def awaitTerminate: Receive = {
-    case RequestSlice =>
+    case RequestSlice(_) =>
       log.info(s"wait for terminate, can't accept any request")
     case Controller.ShutDown =>
       controller ! Controller.ShutDown

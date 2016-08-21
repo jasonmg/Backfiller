@@ -3,6 +3,7 @@ package main.scala.actor
 import akka.actor._
 import main.scala.actor.Controller._
 import main.scala.actor.Converter.RequestConverter
+import main.scala.actor.Slice.RequestSlice
 import main.scala.core.BackfillerPluginFacade
 import main.scala.actor.Statistic._
 import main.scala.model.Phase
@@ -39,7 +40,7 @@ class Filter(plugin: BackfillerPluginFacade[_], controller: ActorRef, converter:
         if(res.nonEmpty) converter ! RequestConverter(res)
         else {
           log.debug("after filter, the size is empty, request slice again")
-          controller ! StartSlice
+          controller ! RequestSlice(Phase.Filter)
         }
       }
 
