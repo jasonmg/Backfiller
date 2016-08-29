@@ -26,7 +26,7 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
 
   def persistIntoFile(smokeFile: File, mode: SinkMode): Unit = {
     def convert(): Seq[String] = mode match {
-      case JSON => toJSONOutput(cache)
+      case JSON => "[" +: toJSONOutput(cache) :+ "]"
       case XML => toXMLOutput(cache)
       case CSV => toCSVOutput(cache)
       case _ => throw new IllegalArgumentException(s"unsupported sink mode: $mode")
@@ -37,7 +37,10 @@ class DefaultSinkProvider(args: BackfillerArgs) extends SinkProvider {
     log.info(s"start write to file: ${smokeFile}")
     val (time, _) = timer {
       using(new FileWriter(smokeFile)) { printer =>
-        result foreach printer.write
+        result foreach { r =>
+          printer.write(r)
+          printer.write("\n")
+        }
         printer.flush()
       }
     }

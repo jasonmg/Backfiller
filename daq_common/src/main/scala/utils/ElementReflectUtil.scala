@@ -80,7 +80,7 @@ object ElementReflectUtil {
       values.+:(headStr)
     } else Seq("Null")
 
-    "[" +: res :+ "]"
+     res
   }
 
 }

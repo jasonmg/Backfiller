@@ -142,8 +142,8 @@ class Statistic extends Actor with ActorLogging {
 
   def buildTable(params: Seq[PrintParam]): Table = {
     val head = Seq("phase",
-      "before",
-      "after",
+      "before object",
+      "after object",
       "failure",
       "MeanRate",
       "OneMinuteRate",

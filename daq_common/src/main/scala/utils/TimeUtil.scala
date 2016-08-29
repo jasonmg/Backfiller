@@ -30,7 +30,7 @@ object TimeUtil {
     def nano2Millis(nanoSeconds: Long): String = {
       val s = nanoSeconds.toMillis
       val res = {
-        if (s != 0) readableFormat(s)
+        if (s != 0) s+" " +readableFormat(s)
         else {
           "0." + padding(nanoSeconds.toMicos % 1000)
         }

@@ -83,7 +83,7 @@ class Controller[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[C
       slice ! StartSlice
 
     case RequestSlice(phase) =>
-      log.info(s"request slice from: $phase")
+      log.debug(s"request slice from: $phase")
       slice ! RequestSlice(phase)
 
     case AllSliceSent =>

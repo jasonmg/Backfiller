@@ -47,7 +47,6 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
       stop()
 
     case RequestSlice(_) =>
-      log.info(s"request slice, workQueue size is: ${workQueue.size}")
       val provider = plugin.sliceProvider
       // enqueueFn is for turn enqueue signature (A*) => Unit to (Seq[A]) => Unit
       // enqueue(_) signature is (Any) => Unit, Be careful scala Currying.
@@ -58,6 +57,7 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
             if (isContinuous) {
               workQueue.enqueue(res.head)
             } else {
+              log.info(s"sliced sequence size is: ${res.size}")
               enqueueFn(res)
             }
           }
@@ -67,6 +67,7 @@ class Slice[CmdLineArgs <: BackfillerArgs](plugin: BackfillerPluginFacade[CmdLin
       }
 
       if (workQueue.nonEmpty) {
+        log.debug(s"workQueue size: ${workQueue.size}")
         source ! RequestSource(getOrLookHead())
         statistic ! RecordSlice
       }
