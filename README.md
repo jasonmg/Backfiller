@@ -23,3 +23,14 @@ filter  5      2     0       0.576648845354604   0.0           0.0            0.
 convert 3      3     0       0.5766436776471278  0.0           0.0            0.0               6 ms    2 ms    0 ms    6 ms           6 ms           6 ms           6 ms          
 sink    2      2     0       0.19221911068113465 0.0           0.0            0.0               7 ms    7 ms    7 ms    7 ms           7 ms           7 ms           7 ms                 
 ```
+
+# Architecture
+
+## BackfillerSystem
+![BackfillerSystem](/architecture/BackfillerSystem.png)
+
+## BackfillerCoreSystem
+![BackfillerCoreSystem](/architecture/BackfillerCoreSystem.png)
+
+## ActorSystem
+![ActorSystem](/architecture/ActorSystem.png)
