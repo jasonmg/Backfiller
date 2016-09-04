@@ -34,3 +34,6 @@ sink    2      2     0       0.19221911068113465 0.0           0.0            0.
 
 ## ActorSystem
 ![ActorSystem](/architecture/ActorSystem.png)
+
+## ActorMessageFlow
+![ActorSystem](/architecture/ActorMessageFlow.png)
