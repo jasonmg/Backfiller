@@ -39,6 +39,20 @@ class Table(head: Row, var rows: mutable.Seq[Row] = mutable.Seq.empty) extends L
     f(splitLineStr)
     bodyStrs foreach f
   }
+
+  def print1(f: String => Unit = println) = {
+    val b = rows.+:(head)
+    val SequenceOf1 = List.fill(head.size)(1)
+
+    val h =  head.items zip SequenceOf1
+    val headStr = formatStr1(h,"\t")
+
+    val body = rows map { r => r.items zip SequenceOf1 }
+    val bodyStrs = body.map(formatStr1(_,"\t"))
+
+    f(headStr)
+    bodyStrs foreach f
+  }
 }
 
 object Table {
@@ -73,8 +87,16 @@ object Table {
       case (r, width) => align(r ,width, withChar)
     } mkString(" ")
   }
+
+  def formatStr1(str: Seq[(String, Int)], withChar: String = " "): String ={
+    str map {
+      case (r, width) => r
+    } mkString("\t")
+  }
 }
 
-case class Row(items: Seq[String])
+case class Row(items: Seq[String]){
+  def size = items.size
+}
 
 case class Column(items: Seq[String])

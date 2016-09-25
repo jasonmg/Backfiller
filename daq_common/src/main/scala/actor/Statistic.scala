@@ -136,8 +136,11 @@ class Statistic extends Actor with ActorLogging {
     val convertParam = PrintParam("convert", convertTime, convertCount.getCount, convertCount.getCount, convertFailureCount.getCount)
     val sinkParam = PrintParam("sink", flushTime, sinkCount.getCount, sinkCount.getCount, 0)
 
-    val table = buildTable(Seq(sliceParam,sourceParam,filterParam,convertParam,sinkParam))
-    table.print()
+    val table = buildGraph(Seq(sliceParam,sourceParam,filterParam,convertParam,sinkParam))
+    table.print1()
+
+    val table1 = buildModelTime(Seq(sliceParam,sourceParam,filterParam,convertParam,sinkParam))
+    table1.print1()
   }
 
   def buildTable(params: Seq[PrintParam]): Table = {
@@ -170,6 +173,59 @@ class Statistic extends Actor with ActorLogging {
         timer.getOneMinuteRate,
         timer.getFiveMinuteRate,
         timer.getFifteenMinuteRate,
+        readableTime(s.getMax),
+        readableTime(s.getMean.toLong),
+        readableTime(s.getMin),
+        readableTime(s.get75thPercentile().toLong),
+        readableTime(s.get95thPercentile().toLong),
+        readableTime(s.get98thPercentile().toLong),
+        readableTime(s.get99thPercentile().toLong)
+      ).map(_.toString))
+    })
+
+    table
+  }
+
+
+  def buildGraph(params: Seq[PrintParam]): Table = {
+    val head = Seq("phase",
+      "MeanRate",
+      "OneMinuteRate",
+      "FiveMinuteRate",
+      "FifteenMinuteRate"
+     )
+
+    val table = Table(head)
+
+    params.foreach (param => {
+      val timer = param.timer
+      table.addRow(Seq(param.phase,
+        timer.getMeanRate,
+        timer.getOneMinuteRate,
+        timer.getFiveMinuteRate,
+        timer.getFifteenMinuteRate
+      ).map(_.toString))
+    })
+
+    table
+  }
+
+  def buildModelTime(params: Seq[PrintParam]): Table = {
+    val head = Seq("phase",
+      "Max",
+      "Mean",
+      "Min",
+      "75thPercentile",
+      "95thPercentile",
+      "98thPercentile",
+      "99thPercentile")
+
+    val table = Table(head)
+
+    params.foreach (param => {
+      val timer = param.timer
+      val s = timer.getSnapshot
+      table.addRow(Seq(param.phase,
         readableTime(s.getMax),
         readableTime(s.getMean.toLong),
         readableTime(s.getMin),
