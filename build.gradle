@@ -1,0 +1,52 @@
+group 'com.daq'
+version '1.0'
+
+// 团队成员gradle环境一致性
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0.1'
+}
+
+
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'scala'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+    }
+
+
+    dependencies {
+
+        // spring boot with akka-http (http://www.jianshu.com/p/74db588f700e)
+//    compile("com.github.scalaspring:akka-http-spring-boot_2.11:0.3.1")
+
+        compile("org.scala-lang:scala-library:2.11.11")
+        compile("org.scala-lang:scala-reflect:2.11.11")
+
+        compile("com.typesafe.akka:akka-actor_2.11:2.5.4")
+        compile("com.typesafe.akka:akka-http_2.11:10.0.10")
+        compile("com.typesafe.akka:akka-http-spray-json_2.11:10.0.10")
+//        compile("com.typesafe.scala-logging:scala-logging_2.11:3.5.0")
+
+
+        compile("io.dropwizard.metrics:metrics-core:3.1.2")
+
+        compile("com.typesafe.akka:akka-stream_2.11:2.5.4")
+        compile("com.typesafe.akka:akka-actor_2.11:2.5.4")
+        compile("com.typesafe.akka:akka-stream-kafka_2.11:0.17")
+
+        compile("ch.qos.logback:logback-classic:1.2.3")
+        compile("org.apache.commons:commons-lang3:3.5")
+    }
+
+
+
+
+
+}

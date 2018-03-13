@@ -1,0 +1,3 @@
+rootProject.name= 'daq'
+include 'daq_common'
+include 'daq_sample'

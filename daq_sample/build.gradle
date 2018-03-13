@@ -1,0 +1,11 @@
+
+configurations.all {
+    // 强制规定一个jar的版本
+    resolutionStrategy {
+        force 'com.google.guava:guava:14.0.1'
+    }
+}
+
+dependencies {
+    compile project(":daq_common")
+}

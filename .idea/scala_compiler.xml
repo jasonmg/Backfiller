@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaCompilerConfiguration">
+    <profile name="Gradle 1" modules="dap_common-dap_common_main,dap_common-dap_common_test,dap_common_main,dap_common_test,dap_sample_main,dap_sample_test,daq_common_main,daq_common_test,daq_sample_main,daq_sample_test">
+      <option name="deprecationWarnings" value="true" />
+      <option name="uncheckedWarnings" value="true" />
+      <parameters>
+        <parameter value="-target:jvm-1.8" />
+      </parameters>
+    </profile>
+  </component>
+</project>

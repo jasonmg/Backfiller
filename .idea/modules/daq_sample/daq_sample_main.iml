@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":daq_sample:main" external.linked.project.path="$MODULE_DIR$/../../../daq_sample" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="daq" external.system.module.type="sourceSet" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <output url="file://$MODULE_DIR$/../../../daq_sample/out/production/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../daq_sample/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../../daq_sample/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../daq_sample/src/main/scala" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../daq_sample/src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="daq_common_main" />
+    <orderEntry type="library" name="Gradle: org.scala-lang:scala-reflect:2.11.11" level="project" />
+    <orderEntry type="library" name="Gradle: com.typesafe.akka:akka-http-spray-json_2.11:10.0.10" level="project" />
+    <orderEntry type="library" name="Gradle: com.typesafe.akka:akka-http_2.11:10.0.10" level="project" />
+    <orderEntry type="library" name="Gradle: com.typesafe.akka:akka-stream-kafka_2.11:0.17" level="project" />
+    <orderEntry type="library" name="Gradle: com.typesafe.akka:akka-http-core_2.11:10.0.10" level="project" />
+    <orderEntry type="library" name="Gradle: io.spray:spray-json_2.11:1.3.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.typesafe.akka:akka-parsing_2.11:10.0.10" level="project" />
+    <orderEntry type="library" name="Gradle: com.typesafe.akka:akka-stream_2.11:2.5.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.typesafe:ssl-config-core_2.11:0.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.scala-lang.modules:scala-parser-combinators_2.11:1.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.typesafe.akka:akka-actor_2.11:2.5.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.scala-lang.modules:scala-java8-compat_2.11:0.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.scala-lang:scala-library:2.11.11" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-core:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: ch.qos.logback:logback-classic:1.2.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.5" level="project" />
+    <orderEntry type="library" name="Gradle: com.typesafe:config:1.3.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.kafka:kafka-clients:0.11.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" name="Gradle: org.reactivestreams:reactive-streams:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: ch.qos.logback:logback-core:1.2.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.kohsuke.args4j:args4j-maven-plugin:2.0.22" level="project" />
+    <orderEntry type="library" name="Gradle: net.jpountz.lz4:lz4:1.3.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.xerial.snappy:snappy-java:1.1.2.6" level="project" />
+    <orderEntry type="library" name="Gradle: args4j:args4j-tools:all:2.0.22" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven:maven-project:2.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven:maven-plugin-api:2.0" level="project" />
+    <orderEntry type="library" name="Gradle: ant:ant:1.5" level="project" />
+    <orderEntry type="library" name="Gradle: args4j:args4j:2.0.22" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven:maven-settings:2.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven:maven-profile:2.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven:maven-model:2.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven:maven-artifact-manager:2.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven:maven-artifact:2.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.plexus:plexus-container-default:1.0-alpha-9" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven:maven-repository-metadata:2.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven.wagon:wagon-provider-api:1.0-alpha-6" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.plexus:plexus-utils:1.1" level="project" />
+    <orderEntry type="library" name="Gradle: junit:junit:3.8.1" level="project" />
+    <orderEntry type="library" name="Gradle: classworlds:classworlds:1.1-alpha-2" level="project" />
+  </component>
+</module>
